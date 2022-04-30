@@ -1,0 +1,38 @@
+{
+  "name": "rosette-monorepo",
+  "version": "0.0.1",
+  "description": "A monorepo of TypeScript libraries for interacting with the Rosette protocol",
+  "private": true,
+  "scripts": {
+    "build": "preconstruct build",
+    "preinstall": "npx only-allow pnpm",
+    "dev": "preconstruct dev",
+    "postinstall": "preconstruct dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BlossomLabs/rosette.ts.git"
+  },
+  "keywords": [
+    "ethereum"
+  ],
+  "author": "Blossom Labs",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/BlossomLabs/rosette.ts/issues"
+  },
+  "homepage": "https://github.com/BlossomLabs/rosette.ts#readme",
+  "preconstruct": {
+    "packages": [
+      "packages/*"
+    ]
+  },
+  "devDependencies": {
+    "@babel/core": "^7.17.10",
+    "@babel/preset-env": "^7.17.10",
+    "@babel/preset-react": "^7.16.7",
+    "@babel/preset-typescript": "^7.16.7",
+    "@preconstruct/cli": "^2.1.5",
+    "typescript": "^4.6.4"
+  }
+}

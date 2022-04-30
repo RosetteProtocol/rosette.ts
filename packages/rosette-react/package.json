@@ -1,0 +1,20 @@
+{
+  "name": "@blossom-labs/rosette-react",
+  "version": "0.0.1",
+  "description": "A React library for interacting with the Rosette protocol",
+  "main": "dist/blossom-labs-rosette-react.cjs.js",
+  "module": "dist/blossom-labs-rosette-react.esm.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BlossomLabs/rosette.ts.git"
+  },
+  "author": "Blossom Labs",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/BlossomLabs/rosette.ts/issues"
+  },
+  "homepage": "https://github.com/BlossomLabs/rosette.ts#readme"
+}
