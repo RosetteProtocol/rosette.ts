@@ -32,6 +32,7 @@
       }
     ],
     "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/consistent-type-imports": "warn",
     "sort-imports": [
       "warn",
       {
