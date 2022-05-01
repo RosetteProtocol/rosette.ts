@@ -5,13 +5,14 @@
   "private": true,
   "scripts": {
     "build": "preconstruct build",
-    "preinstall": "npx only-allow pnpm",
+    "changeset:release": "pnpm build && changeset publish",
+    "changeset:version": "changeset version && pnpm install --lockfile-only",
     "dev": "preconstruct dev",
-    "postinstall": "husky install .config/husky && pnpm dev",
     "lint": "eslint --cache",
     "lint:fix": "pnpm lint --fix",
     "lint:format": "prettier --write",
-    "prepare": "husky install"
+    "preinstall": "npx only-allow pnpm",
+    "postinstall": "husky install .config/husky && pnpm dev"
   },
   "repository": {
     "type": "git",
@@ -44,6 +45,7 @@
     "@babel/preset-env": "^7.17.10",
     "@babel/preset-react": "^7.16.7",
     "@babel/preset-typescript": "^7.16.7",
+    "@changesets/cli": "^2.22.0",
     "@preconstruct/cli": "^2.1.5",
     "@types/eslint": "^8.4.1",
     "@types/prettier": "^2.6.0",
