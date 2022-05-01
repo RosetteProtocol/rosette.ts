@@ -10,7 +10,7 @@
     },
     "allowImportExportEverywhere": true
   },
-  "plugins": ["@typescript-eslint", "import"],
+  "plugins": ["@typescript-eslint", "import", "jest"],
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
@@ -54,5 +54,11 @@
     "react": {
       "version": "detect"
     }
+  },
+  "env": {
+    "es6": true,
+    "browser": true,
+    "node": true,
+    "jest": true
   }
 }
