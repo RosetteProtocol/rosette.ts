@@ -1,0 +1,12 @@
+{
+  "name": "@blossom-labs/rosette-types",
+  "version": "0.0.1",
+  "private": true,
+  "main": "dist/blossom-labs-rosette-types.cjs.js",
+  "module": "dist/blossom-labs-rosette-types.esm.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Blossom Labs",
+  "license": "MIT"
+}

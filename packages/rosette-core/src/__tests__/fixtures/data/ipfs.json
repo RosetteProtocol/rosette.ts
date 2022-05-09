@@ -1,0 +1,10 @@
+{
+  "QmNUy3tgcBwFhWrbuvaXGSgx5jrtFAqr5kU5ksKtxHRpjU": {
+    "abi": "function removeEntry(bytes32,bytes4)",
+    "notice": "Remove an entry from the registry with `_scope` and `_sig`"
+  },
+  "QmQBWU4C9y9hQzw3NFiBsYPD21V1aFpDKTz6eZzgqmBS88": {
+    "abi": "function upsertEntry(bytes32,bytes4,bytes) payable",
+    "notice": "Upsert an entry with `_scope` and `_sig`"
+  }
+}
