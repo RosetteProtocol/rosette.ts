@@ -1,5 +1,5 @@
 import type { Address } from '@blossom-labs/rosette-types';
-import { Contract as EthersContract, providers } from 'ethers';
+import { Contract as EthersContract, ethers, providers } from 'ethers';
 import LRUCache from 'lru-cache';
 
 import { toUtf8String } from 'ethers/lib/utils';
@@ -22,7 +22,7 @@ const isEntryValid = (e: FnEntry): boolean => !!e.abi && !!e.notice;
 export class Fetcher {
   readonly subgraphConnector: SubgraphConnector;
   #ipfsResolver: IPFSResolver;
-  #providersCache: Map<number, providers.StaticJsonRpcProvider>;
+  protected providersCache: Map<number, providers.Provider>;
   #entriesCache: LRUCache<string, FnEntry>;
   #rosetteStone: EthersContract;
 
@@ -37,7 +37,7 @@ export class Fetcher {
     this.subgraphConnector = new SubgraphConnector(networkId);
     this.#ipfsResolver = new IPFSResolver(ipfsGateway);
     this.#entriesCache = new LRUCache({ max: 100 });
-    this.#providersCache = new Map<number, providers.StaticJsonRpcProvider>();
+    this.providersCache = new Map<number, providers.StaticJsonRpcProvider>();
     this.#rosetteStone = new EthersContract(
       config.contractAddresses.rosetteStone,
       rosetteStoneAbi,
@@ -51,7 +51,7 @@ export class Fetcher {
     sigHash: string,
   ): Promise<FnEntry> {
     const bytecodeHash = await getBytecodeHash(
-      this.#getProvider(networkId),
+      this.getProvider(networkId),
       contractAddress,
     );
     const entryId = buildEntryId(bytecodeHash, sigHash);
@@ -74,7 +74,7 @@ export class Fetcher {
     // TODO: implement logic involving a selected group of sig hashes.
   ): Promise<FnEntry[]> {
     const bytecodeHash = await getBytecodeHash(
-      this.#getProvider(networkId),
+      this.getProvider(networkId),
       contractAddress,
     );
     const [entries] = await this.subgraphConnector.entries(bytecodeHash);
@@ -125,15 +125,16 @@ export class Fetcher {
     return fnEntry;
   }
 
-  #getProvider(networkId: number): providers.StaticJsonRpcProvider {
-    if (this.#providersCache.has(networkId)) {
+  protected getProvider(networkId: number): providers.Provider {
+    if (this.providersCache.has(networkId)) {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return this.#providersCache.get(networkId)!;
+      return this.providersCache.get(networkId)!;
     }
 
-    const p = new providers.StaticJsonRpcProvider('', networkId);
+    // TODO: replace for our own provider.
+    const p = ethers.getDefaultProvider(networkId);
 
-    this.#providersCache.set(networkId, p);
+    this.providersCache.set(networkId, p);
 
     return p;
   }
