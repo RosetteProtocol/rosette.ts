@@ -10,7 +10,7 @@
     },
     "allowImportExportEverywhere": true
   },
-  "plugins": ["@typescript-eslint", "import"],
+  "plugins": ["@typescript-eslint", "import", "jest"],
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
@@ -32,6 +32,7 @@
       }
     ],
     "@typescript-eslint/no-explicit-any": "off",
+    "@typescript-eslint/consistent-type-imports": "warn",
     "sort-imports": [
       "warn",
       {
@@ -54,5 +55,11 @@
     "react": {
       "version": "detect"
     }
+  },
+  "env": {
+    "es6": true,
+    "browser": true,
+    "node": true,
+    "jest": true
   }
 }
