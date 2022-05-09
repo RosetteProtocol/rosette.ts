@@ -1,12 +1,27 @@
 import { providers } from 'ethers';
 
 import { Fetcher } from '../fetcher/Fetcher';
-import { DEFAULT_NETWORK, DEFAULT_RPC_ENDPOINT } from './fixtures/helpers';
+import { TEST_NETWORK, TEST_RPC_ENDPOINT } from './fixtures/helpers';
 import { setUpTestServer } from './fixtures/server';
 import contractFixture from './fixtures/data/contract.json';
 import subgraphFixture from './fixtures/data/subgraph.json';
 
 const sigHashes = subgraphFixture.data.contract.functions.map((f) => f.sigHash);
+
+class MockFetcher extends Fetcher {
+  protected getProvider(networkId: number): providers.Provider {
+    if (this.providersCache.has(networkId)) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      return this.providersCache.get(networkId)!;
+    }
+
+    const p = new providers.JsonRpcProvider(TEST_RPC_ENDPOINT);
+
+    this.providersCache.set(networkId, p);
+
+    return p;
+  }
+}
 
 describe('Fetcher', () => {
   let fetcher: Fetcher;
@@ -14,8 +29,8 @@ describe('Fetcher', () => {
   setUpTestServer();
 
   beforeEach(() => {
-    const provider = new providers.JsonRpcProvider(DEFAULT_RPC_ENDPOINT);
-    fetcher = new Fetcher(DEFAULT_NETWORK, { provider });
+    const provider = new providers.JsonRpcProvider(TEST_RPC_ENDPOINT);
+    fetcher = new MockFetcher(TEST_NETWORK, { provider });
   });
 
   describe('when fetching a function entry', () => {
@@ -23,7 +38,7 @@ describe('Fetcher', () => {
       const sigHash = sigHashes[0];
 
       const fnEntry = await fetcher.entry(
-        DEFAULT_NETWORK,
+        TEST_NETWORK,
         contractFixture.address,
         sigHash,
       );
@@ -42,7 +57,7 @@ describe('Fetcher', () => {
       const sigHash = sigHashes[1];
 
       const fnEntry = await fetcher.entry(
-        DEFAULT_NETWORK,
+        TEST_NETWORK,
         contractFixture.address,
         sigHash,
       );
@@ -62,7 +77,7 @@ describe('Fetcher', () => {
       const sigHash = '0xd3cd7efa';
 
       const fnEntry = await fetcher.entry(
-        DEFAULT_NETWORK,
+        TEST_NETWORK,
         contractFixture.address,
         sigHash,
       );

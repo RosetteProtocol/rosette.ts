@@ -7,7 +7,7 @@ import subgraphFixture from './data/subgraph.json';
 import contractFixture from './data/contract.json';
 import ipfsResponse from './data/ipfs.json';
 import { DEFAULT_IPFS_GATEWAY } from '../../fetcher/IPFSResolver';
-import { DEFAULT_NETWORK, DEFAULT_RPC_ENDPOINT } from './helpers';
+import { TEST_NETWORK, TEST_RPC_ENDPOINT } from './helpers';
 
 const rosetteStoneInterface = new utils.Interface(rosetteStoneAbi);
 
@@ -50,7 +50,7 @@ const handlers = [
 
     return res(ctx.status(200), ctx.data(payload));
   }),
-  rest.post(DEFAULT_RPC_ENDPOINT, (req, res, ctx) => {
+  rest.post(TEST_RPC_ENDPOINT, (req, res, ctx) => {
     const isObject = typeof req.body === 'object';
     const reqBody = req.body as Record<string, any>;
 
@@ -59,7 +59,7 @@ const handlers = [
       switch (method) {
         case 'net_version':
         case 'eth_chainId':
-          return res(ctx.status(200), ctx.json({ result: DEFAULT_NETWORK }));
+          return res(ctx.status(200), ctx.json({ result: TEST_NETWORK }));
         case 'eth_call': {
           const [tx] = reqBody.params;
           const txDescription = rosetteStoneInterface.parseTransaction(tx);

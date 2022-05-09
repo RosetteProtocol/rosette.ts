@@ -1,5 +1,5 @@
 import { SubgraphConnector } from '../fetcher/subgraph-connector/SubgraphConnector';
-import { DEFAULT_NETWORK } from './fixtures/helpers';
+import { TEST_NETWORK } from './fixtures/helpers';
 import subgraphFixture from './fixtures/data/subgraph.json';
 import { setUpTestServer } from './fixtures/server';
 
@@ -10,7 +10,7 @@ describe('Connector', () => {
   setUpTestServer();
 
   beforeEach(async () => {
-    subgraphConnector = new SubgraphConnector(DEFAULT_NETWORK);
+    subgraphConnector = new SubgraphConnector(TEST_NETWORK);
   });
 
   describe("when fetching a contract's function entries", () => {
