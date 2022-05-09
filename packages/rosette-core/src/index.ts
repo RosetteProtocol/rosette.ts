@@ -1,1 +1,3 @@
-export default 2
+export * from './Client';
+
+export * from './types';
