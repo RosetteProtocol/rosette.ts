@@ -1,17 +1,14 @@
-import type { providers } from 'ethers';
-
-import type { Network } from './types';
+import type { FetcherOptions } from './fetcher/Fetcher';
 import { Fetcher } from './fetcher/Fetcher';
 
 export type ClientOptions = {
-  ipfsGateway?: string;
-  provider?: providers.Provider;
+  fetcherOptions: FetcherOptions;
 };
 
 export class Client {
   readonly fetcher: Fetcher;
 
-  constructor(networkId: Network, { ipfsGateway, provider }: ClientOptions) {
-    this.fetcher = new Fetcher(networkId, { ipfsGateway, provider });
+  constructor({ fetcherOptions }: ClientOptions) {
+    this.fetcher = new Fetcher(fetcherOptions);
   }
 }

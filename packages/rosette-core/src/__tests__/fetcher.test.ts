@@ -8,29 +8,18 @@ import subgraphFixture from './fixtures/data/subgraph.json';
 
 const sigHashes = subgraphFixture.data.contract.functions.map((f) => f.sigHash);
 
-class MockFetcher extends Fetcher {
-  protected getProvider(networkId: number): providers.Provider {
-    if (this.providersCache.has(networkId)) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return this.providersCache.get(networkId)!;
-    }
-
-    const p = new providers.JsonRpcProvider(TEST_RPC_ENDPOINT);
-
-    this.providersCache.set(networkId, p);
-
-    return p;
-  }
-}
-
 describe('Fetcher', () => {
   let fetcher: Fetcher;
+  let provider: providers.JsonRpcProvider;
 
   setUpTestServer();
 
   beforeEach(() => {
-    const provider = new providers.JsonRpcProvider(TEST_RPC_ENDPOINT);
-    fetcher = new MockFetcher(TEST_NETWORK, { provider });
+    provider = new providers.JsonRpcProvider(TEST_RPC_ENDPOINT);
+    fetcher = new Fetcher({
+      rosetteNetworkId: TEST_NETWORK,
+      rpcEndpoint: TEST_RPC_ENDPOINT,
+    });
   });
 
   describe('when fetching a function entry', () => {
@@ -38,9 +27,9 @@ describe('Fetcher', () => {
       const sigHash = sigHashes[0];
 
       const fnEntry = await fetcher.entry(
-        TEST_NETWORK,
         contractFixture.address,
         sigHash,
+        provider,
       );
 
       expect(fnEntry).toMatchInlineSnapshot(`
@@ -57,9 +46,9 @@ describe('Fetcher', () => {
       const sigHash = sigHashes[1];
 
       const fnEntry = await fetcher.entry(
-        TEST_NETWORK,
         contractFixture.address,
         sigHash,
+        provider,
       );
 
       expect(fnEntry).toMatchInlineSnapshot(`
@@ -77,9 +66,9 @@ describe('Fetcher', () => {
       const sigHash = '0xd3cd7efa';
 
       const fnEntry = await fetcher.entry(
-        TEST_NETWORK,
         contractFixture.address,
         sigHash,
+        provider,
       );
 
       expect(fnEntry).toMatchInlineSnapshot(`

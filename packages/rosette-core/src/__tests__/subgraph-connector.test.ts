@@ -2,6 +2,7 @@ import { SubgraphConnector } from '../fetcher/subgraph-connector/SubgraphConnect
 import { TEST_NETWORK } from './fixtures/helpers';
 import subgraphFixture from './fixtures/data/subgraph.json';
 import { setUpTestServer } from './fixtures/server';
+import { Config } from '../configuration';
 
 describe('Connector', () => {
   let subgraphConnector: SubgraphConnector;
@@ -10,7 +11,7 @@ describe('Connector', () => {
   setUpTestServer();
 
   beforeEach(async () => {
-    subgraphConnector = new SubgraphConnector(TEST_NETWORK);
+    subgraphConnector = new SubgraphConnector(Config[TEST_NETWORK].subgraphUrl);
   });
 
   describe("when fetching a contract's function entries", () => {

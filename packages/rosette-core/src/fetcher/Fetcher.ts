@@ -1,5 +1,5 @@
 import type { Address } from '@blossom-labs/rosette-types';
-import { Contract as EthersContract, ethers, providers } from 'ethers';
+import { Contract, providers } from 'ethers';
 import LRUCache from 'lru-cache';
 
 import { toUtf8String } from 'ethers/lib/utils';
@@ -8,52 +8,50 @@ import type { FnEntry, Network } from '../types';
 import { IPFSResolver } from './IPFSResolver';
 import { SubgraphConnector } from './subgraph-connector/SubgraphConnector';
 import rosetteStoneAbi from '../abis/RosetteStone.json';
-import { Config } from '../configuration';
+import { Config, DEFAULT_NETWORK } from '../configuration';
 import { getBytecodeHash } from '../utils/web3';
 import { buildEntryId } from './subgraph-connector/helpers';
 
 export type FetcherOptions = {
   ipfsGateway?: string;
-  provider?: providers.Provider;
+  rosetteNetworkId?: Network;
+  rpcEndpoint?: string;
 };
+
+type Provider = providers.Provider;
 
 const isEntryValid = (e: FnEntry): boolean => !!e.abi && !!e.notice;
 
 export class Fetcher {
   readonly subgraphConnector: SubgraphConnector;
   #ipfsResolver: IPFSResolver;
-  protected providersCache: Map<number, providers.Provider>;
   #entriesCache: LRUCache<string, FnEntry>;
-  #rosetteStone: EthersContract;
+  #rosetteStone: Contract;
 
-  constructor(networkId: Network, options: FetcherOptions = {}) {
-    const { ipfsGateway, provider } = options;
-    const config = Config[networkId];
+  constructor(options: FetcherOptions = {}) {
+    const { ipfsGateway, rosetteNetworkId, rpcEndpoint } = options;
+    const config = Config[rosetteNetworkId ?? DEFAULT_NETWORK];
 
     if (!config) {
       throw new Error('Unsupported network');
     }
 
-    this.subgraphConnector = new SubgraphConnector(networkId);
+    this.subgraphConnector = new SubgraphConnector(config.subgraphUrl);
     this.#ipfsResolver = new IPFSResolver(ipfsGateway);
     this.#entriesCache = new LRUCache({ max: 100 });
-    this.providersCache = new Map<number, providers.StaticJsonRpcProvider>();
-    this.#rosetteStone = new EthersContract(
+    this.#rosetteStone = new Contract(
       config.contractAddresses.rosetteStone,
       rosetteStoneAbi,
-      provider ?? providers.getDefaultProvider(networkId),
+      new providers.JsonRpcProvider(rpcEndpoint ?? config.rpcEndpoint),
     );
   }
 
   async entry(
-    networkId: number,
     contractAddress: Address,
     sigHash: string,
+    provider: Provider,
   ): Promise<FnEntry> {
-    const bytecodeHash = await getBytecodeHash(
-      this.getProvider(networkId),
-      contractAddress,
-    );
+    const bytecodeHash = await getBytecodeHash(provider, contractAddress);
     const entryId = buildEntryId(bytecodeHash, sigHash);
 
     if (this.#entriesCache.has(entryId)) {
@@ -69,14 +67,11 @@ export class Fetcher {
   }
 
   async entries(
-    networkId: number,
     contractAddress: Address,
+    provider: Provider,
     // TODO: implement logic involving a selected group of sig hashes.
   ): Promise<FnEntry[]> {
-    const bytecodeHash = await getBytecodeHash(
-      this.getProvider(networkId),
-      contractAddress,
-    );
+    const bytecodeHash = await getBytecodeHash(provider, contractAddress);
     const [entries] = await this.subgraphConnector.entries(bytecodeHash);
 
     // Store entries
@@ -123,19 +118,5 @@ export class Fetcher {
     fnEntry.notice = data.notice;
 
     return fnEntry;
-  }
-
-  protected getProvider(networkId: number): providers.Provider {
-    if (this.providersCache.has(networkId)) {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return this.providersCache.get(networkId)!;
-    }
-
-    // TODO: replace for our own provider.
-    const p = ethers.getDefaultProvider(networkId);
-
-    this.providersCache.set(networkId, p);
-
-    return p;
   }
 }

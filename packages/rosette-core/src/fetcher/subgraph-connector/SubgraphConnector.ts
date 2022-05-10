@@ -1,7 +1,6 @@
 import 'isomorphic-fetch';
 
-import { Config } from '../../configuration';
-import type { FnEntry, Network } from '../../types';
+import type { FnEntry } from '../../types';
 import { parseEntries, parseFunctionEntry } from './parsers';
 import { CONTRACT_FUNCTION_ENTRIES, FUNCTION_ENTRY } from './queries';
 import { buildEntryId } from './helpers';
@@ -17,10 +16,6 @@ type QueryResult = {
 
 type Result<T> = [T | null, boolean];
 
-const getSubgraphUrl = (networkId: Network): string => {
-  return Config[networkId].subgraphUrl;
-};
-
 const DEFAULT_OPTIONS: QueryOptions = {
   allowDisputed: false,
 };
@@ -28,8 +23,8 @@ const DEFAULT_OPTIONS: QueryOptions = {
 export class SubgraphConnector {
   #subgraphUrl: string;
 
-  constructor(networkId: Network) {
-    this.#subgraphUrl = getSubgraphUrl(networkId);
+  constructor(subgraphUrl: string) {
+    this.#subgraphUrl = subgraphUrl;
   }
 
   protected async querySubgraph<T>(

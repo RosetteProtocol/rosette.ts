@@ -1,14 +1,15 @@
-import { providers } from 'ethers';
-
 import { Client } from '../Client';
-import { TEST_NETWORK, TEST_RPC_ENDPOINT } from './fixtures/helpers';
+import { TEST_RPC_ENDPOINT } from './fixtures/helpers';
 
 describe('Client', () => {
   let client: Client;
 
   beforeEach(async () => {
-    const provider = new providers.JsonRpcProvider(TEST_RPC_ENDPOINT);
-    client = new Client(TEST_NETWORK, { provider });
+    client = new Client({
+      fetcherOptions: {
+        rpcEndpoint: TEST_RPC_ENDPOINT,
+      },
+    });
     console.log(client);
   });
 
