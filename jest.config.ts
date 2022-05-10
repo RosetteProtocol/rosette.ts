@@ -34,6 +34,12 @@ const config: Config.InitialOptions = {
       testEnvironment: 'jsdom',
       testRegex: 'packages/rosette-react/src/__tests__/.*\\.test\\.ts(x)?$',
     },
+    {
+      ...baseConfig,
+      displayName: 'rosette-radspec',
+      testEnvironment: 'jsdom',
+      testRegex: 'packages/rosette-radspec/src/__tests__/.*\\.test\\.ts(x)?$',
+    },
   ],
   reporters: ['default', 'github-actions'],
   watchPlugins: [

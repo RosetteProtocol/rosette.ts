@@ -1,0 +1,85 @@
+export enum TokenType {
+  IDENTIFIER = 'IDENTIFIER',
+  TICK = 'TICK',
+  MONOLOGUE = 'MONOLOGUE',
+  TYPE = 'TYPE',
+  LEFT_PAREN = 'LEFT_PAREN',
+  RIGHT_PAREN = 'RIGHT_PAREN',
+  COMMA = 'COMMA',
+  DOT = 'DOT',
+  COLON = 'COLON',
+  MINUS = 'MINUS',
+  MODULO = 'MODULO',
+  QUESTION_MARK = 'QUESTION_MARK',
+  AT = 'AT',
+  PLUS = 'PLUS',
+  STAR = 'STAR',
+  POWER = 'POWER',
+  SLASH = 'SLASH',
+  BANG = 'BANG',
+  BANG_EQUAL = 'BANG_EQUAL',
+  EQUAL = 'EQUAL',
+  EQUAL_EQUAL = 'EQUAL_EQUAL',
+  LESS = 'LESS',
+  LESS_EQUAL = 'LESS_EQUAL',
+  GREATER = 'GREATER',
+  GREATER_EQUAL = 'GREATER_EQUAL',
+  DOUBLE_VERTICAL_BAR = 'DOUBLE_VERTICAL_BAR',
+
+  BOOLEAN = 'BOOLEAN',
+  NUMBER = 'NUMBER',
+  HEXADECIMAL = 'HEXADECIMAL',
+  STRING = 'STRING',
+}
+
+/**
+ * A Scanner token.
+ */
+export type Token = {
+  /**
+   * The token type.
+   */
+  type: TokenType;
+  /**
+   * The value of the token.
+   */
+  value?: any;
+};
+
+export const {
+  MONOLOGUE,
+
+  TICK,
+  LEFT_PAREN,
+  RIGHT_PAREN,
+  COMMA,
+  DOT,
+  COLON,
+  MINUS,
+  PLUS,
+  POWER,
+  STAR,
+  SLASH,
+  MODULO,
+  QUESTION_MARK,
+  BANG,
+  EQUAL,
+  LESS,
+  GREATER,
+  AT,
+
+  BANG_EQUAL,
+  EQUAL_EQUAL,
+  LESS_EQUAL,
+  GREATER_EQUAL,
+  DOUBLE_VERTICAL_BAR,
+
+  IDENTIFIER,
+
+  TYPE,
+  BOOLEAN,
+  NUMBER,
+  STRING,
+
+  HEXADECIMAL,
+} = TokenType;
