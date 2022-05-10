@@ -94,9 +94,9 @@ importers:
       ethers: ^5.6.4
     dependencies:
       '@babel/runtime': 7.17.9
+      '@blossom-labs/rosette-core': link:../rosette-core
       date-fns: 2.28.0
     devDependencies:
-      '@blossom-labs/rosette-core': link:../rosette-core
       '@blossom-labs/rosette-types': link:../rosette-types
       ethers: 5.6.5
 
