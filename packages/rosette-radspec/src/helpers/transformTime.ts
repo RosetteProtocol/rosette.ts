@@ -11,6 +11,7 @@ import {
 } from 'date-fns';
 
 import { TypedValue } from '../evaluator';
+import type { RadspecHelper } from '../types';
 
 type TimeUnit =
   | 'second'
@@ -36,7 +37,8 @@ const ADD_UNIT_FN = new Map([
 ]);
 const DISALLOWED_FROM_UNITS = new Set(['millisecond']);
 
-export default () =>
+export const transformTime: RadspecHelper =
+  () =>
   /**
    * Transform between time units.
    *
@@ -46,11 +48,11 @@ export default () =>
    * @param {string} [fromUnit='second'] The unit to convert the time from
    * @return {Promise<radspec/evaluator/TypedValue>}
    */
-  async (
+  (
     time: number | string,
     toUnit: TimeUnit = BEST_UNIT,
     fromUnit = 'second',
-  ): Promise<TypedValue> => {
+  ) => {
     if (DISALLOWED_FROM_UNITS.has(fromUnit) || !ADD_UNIT_FN.has(fromUnit)) {
       throw new Error(
         `@transformTime: Time unit '${fromUnit}' is not supported as a fromUnit`,

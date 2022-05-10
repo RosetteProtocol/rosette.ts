@@ -1,8 +1,13 @@
 import { BigNumber } from 'ethers';
 
+import { TypedValue } from '../evaluator';
+
+import type { RadspecHelper } from '../types';
+
 import { formatBN, tenPow } from './lib/formatBN';
 
-export default () =>
+export const formatPct: RadspecHelper =
+  () =>
   /**
    * Format a percentage amount
    *
@@ -11,7 +16,7 @@ export default () =>
    * @param {*} [precision=2] The number of decimal places to format to
    * @return {Promise<radspec/evaluator/TypedValue>}
    */
-  async (value: any, base = tenPow(18), precision = 2) => {
+  (value: any, base = tenPow(18), precision = 2) => {
     const valueBn = BigNumber.from(value);
     const baseBn = BigNumber.from(base);
 
@@ -22,8 +27,5 @@ export default () =>
       Number(precision),
     );
 
-    return {
-      type: 'string',
-      value: `${formattedAmount}`,
-    };
+    return new TypedValue('string', `${formattedAmount}`);
   };

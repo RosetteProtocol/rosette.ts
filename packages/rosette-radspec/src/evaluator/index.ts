@@ -3,8 +3,10 @@
  */
 
 import type { Transaction } from '@blossom-labs/rosette-types';
-import { BigNumber, ethers, utils as ethersUtils } from 'ethers';
+import { BigNumber, utils as ethersUtils } from 'ethers';
 import type { providers } from 'ethers';
+
+import type { Fetcher } from '@blossom-labs/rosette-core';
 
 import HelperManager from '../helpers/HelperManager';
 import { TYPES, isAddress, isInteger } from '../types/solidity';
@@ -29,7 +31,8 @@ export interface EvaluatorOptions {
    * Available helpers
    */
   availableHelpers: Record<string, any>;
-  provider?: providers.Provider;
+  fetcher: Fetcher;
+  provider: providers.Provider;
   transaction: Transaction;
 }
 /**
@@ -91,23 +94,27 @@ export class TypedValue {
 export class Evaluator {
   #ast: any;
   #bindings: any;
-  #provider: providers.Provider;
   // Tx data
   #from: TypedValue | undefined;
   #to: TypedValue | undefined;
   #data: TypedValue | undefined;
-  #value: any;
+  #value: TypedValue | undefined;
 
-  readonly helpers: HelperManager;
+  readonly fetcher: Fetcher;
+  readonly helperManager: HelperManager;
+  readonly provider: providers.Provider;
 
-  constructor(ast: AST, bindings: Bindings, options?: EvaluatorOptions) {
-    const { availableHelpers = {}, transaction, provider } = options || {};
+  constructor(ast: AST, bindings: Bindings, options: EvaluatorOptions) {
+    const {
+      availableHelpers = {},
+      fetcher,
+      provider,
+      transaction,
+    } = options || {};
     const { from, to, data, value = 0 } = transaction || {};
 
     this.#ast = ast;
     this.#bindings = bindings;
-    this.#provider = provider ?? ethers.getDefaultProvider();
-
     this.#from = from ? new TypedValue('address', from) : undefined;
     this.#to = to ? new TypedValue('address', to) : undefined;
     this.#value = value
@@ -115,7 +122,9 @@ export class Evaluator {
       : undefined;
     this.#data = data ? new TypedValue('bytes', data) : undefined;
 
-    this.helpers = new HelperManager(availableHelpers);
+    this.helperManager = new HelperManager(availableHelpers);
+    this.fetcher = fetcher;
+    this.provider = provider;
   }
 
   /**
@@ -338,7 +347,7 @@ export class Evaluator {
         inputs.map((input) => input.value.toString()),
       );
 
-      const data = await this.#provider.call({
+      const data = await this.provider.call({
         to: target?.value,
         data: txData,
       });
@@ -354,14 +363,13 @@ export class Evaluator {
     if (node.type === 'HelperFunction') {
       const helperName = node.name;
 
-      if (helperName && !this.helpers.exists(helperName)) {
+      if (helperName && !this.helperManager.exists(helperName)) {
         this.panic(`${helperName} helper function is not defined`);
       }
 
       const inputs = await this.evaluateNodes(node.inputs ?? []);
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const result = await this.helpers.execute(helperName!, inputs, {
-        provider: this.#provider,
+      const result = await this.helperManager.execute(helperName!, inputs, {
         evaluator: this,
       });
 

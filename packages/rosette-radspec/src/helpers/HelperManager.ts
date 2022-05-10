@@ -1,15 +1,9 @@
 /**
  * @module radspec/helpers/HelperManager
  */
+import type { TypedValue } from '../evaluator';
+import type { HelperConfig, RadspecHelper } from '../types';
 
-import type { providers } from 'ethers';
-
-import type { Evaluator, TypedValue } from '../evaluator';
-
-type HelperConfig = {
-  provider: providers.Provider;
-  evaluator: Evaluator;
-};
 /**
  * Class for managing the execution of helper functions
  *
@@ -17,10 +11,10 @@ type HelperConfig = {
  * @param {Object} availableHelpers Defined helpers
  */
 export default class HelperManager {
-  #availableHelpers: any;
+  readonly availableHelpers: Record<string, RadspecHelper>;
 
   constructor(availableHelpers = {}) {
-    this.#availableHelpers = availableHelpers;
+    this.availableHelpers = availableHelpers;
   }
 
   /**
@@ -29,7 +23,7 @@ export default class HelperManager {
    * @param  helper Helper name
    */
   exists(helper: string): boolean {
-    return !!this.#availableHelpers[helper];
+    return !!this.availableHelpers[helper];
   }
 
   /**
@@ -45,18 +39,9 @@ export default class HelperManager {
   execute(
     helper: string,
     inputs: TypedValue[],
-    { provider, evaluator }: HelperConfig,
-  ) {
+    config: HelperConfig,
+  ): ReturnType<ReturnType<RadspecHelper>> {
     inputs = inputs.map((input) => input.value); // pass values directly
-    return this.#availableHelpers[helper](provider, evaluator)(...inputs);
-  }
-
-  /**
-   * Get all registered helpers as a key-value mapping
-   *
-   * @return {Object}
-   */
-  getHelpers() {
-    return this.#availableHelpers;
+    return this.availableHelpers[helper](config)(...inputs);
   }
 }

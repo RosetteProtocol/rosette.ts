@@ -1,4 +1,3 @@
-import type { providers } from 'ethers';
 import { BigNumber, Contract, utils as ethersUtils } from 'ethers';
 
 import type { Address } from '@blossom-labs/rosette-types';
@@ -9,8 +8,11 @@ import {
   ETH,
 } from './lib/token';
 import { formatBN, tenPow } from './lib/formatBN';
+import type { RadspecHelper } from '../types';
+import { TypedValue } from '../evaluator';
 
-export default (provider: providers.Provider) =>
+export const tokenAmount: RadspecHelper =
+  ({ evaluator: { provider } }) =>
   /**
    * Format token amounts taking decimals into account
    *
@@ -19,8 +21,7 @@ export default (provider: providers.Provider) =>
    * @param {bool} showSymbol Whether the token symbol will be printed after the amount
    * @param {*} precision The number of decimal places to format to. If set, the precision is always enforced.
    * @return {Promise<radspec/evaluator/TypedValue>}
-   */
-  async (
+   */ async (
     tokenAddress: Address,
     amount: any,
     showSymbol = true,
@@ -70,8 +71,8 @@ export default (provider: providers.Provider) =>
       fixed,
     );
 
-    return {
-      type: 'string',
-      value: showSymbol ? `${formattedAmount} ${symbol}` : formattedAmount,
-    };
+    return new TypedValue(
+      'string',
+      showSymbol ? `${formattedAmount} ${symbol}` : formattedAmount,
+    );
   };

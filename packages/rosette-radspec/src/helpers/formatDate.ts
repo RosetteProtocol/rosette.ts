@@ -1,6 +1,10 @@
-import formatDate from 'date-fns/format';
+import dnsFormateDate from 'date-fns/format';
 
-export default () =>
+import { TypedValue } from '../evaluator';
+import type { RadspecHelper } from '../types';
+
+export const formatDate: RadspecHelper =
+  () =>
   /**
    * Format a timestamp as a string
    *
@@ -9,7 +13,8 @@ export default () =>
    *                                      Uses unicode TR35 symbols; see https://date-fns.org/v2.0.0-alpha.22/docs/format
    * @return {Promise<radspec/evaluator/TypedValue>}
    */
-  async (timestamp: number | string, format = 'MMM. do y'): Promise<any> => ({
-    type: 'string',
-    value: formatDate(new Date(Number(timestamp) * 1000), format),
-  });
+  (timestamp: number | string, format = 'MMM. do y') =>
+    new TypedValue(
+      'string',
+      dnsFormateDate(new Date(Number(timestamp) * 1000), format),
+    );

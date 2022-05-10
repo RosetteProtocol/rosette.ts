@@ -1,19 +1,19 @@
 import HelperManager from './HelperManager';
-import echo from './echo';
-import formatDate from './formatDate';
-import fromHex from './fromHex';
-import formatPct from './formatPct';
-import withDecimals from './withDecimals';
-import tokenAmount from './tokenAmount';
-import transformTime from './transformTime';
-// import radspec from './radspec';
+import { echo } from './echo';
+import { formatDate } from './formatDate';
+import { fromHex } from './fromHex';
+import { formatPct } from './formatPct';
+import { withDecimals } from './withDecimals';
+import { tokenAmount } from './tokenAmount';
+import { transformTime } from './transformTime';
+import { radspec } from './radspec';
 
 const defaultHelpers = {
   echo,
   formatDate,
   formatPct,
   fromHex,
-  // radspec,
+  radspec,
   tokenAmount,
   transformTime,
   withDecimals,
@@ -26,7 +26,7 @@ export {
   formatDate,
   formatPct,
   fromHex,
-  // radspec,
+  radspec,
   transformTime,
   tokenAmount,
   withDecimals,

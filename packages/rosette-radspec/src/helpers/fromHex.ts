@@ -1,6 +1,10 @@
 import { BigNumber, utils as ethersUtils } from 'ethers';
 
-export default () =>
+import { TypedValue } from '../evaluator';
+import type { RadspecHelper } from '../types';
+
+export const fromHex: RadspecHelper =
+  () =>
   /**
    * Returns the string representation of a given hex value
    *
@@ -8,10 +12,10 @@ export default () =>
    * @param [to='utf8'] The type to convert the hex from (supported types: 'utf8', 'number')
    * @return {radspec/evaluator/TypedValue}
    */
-  (hex: string, to = 'utf8') => ({
-    type: 'string',
-    value:
+  (hex: string, to = 'utf8') =>
+    new TypedValue(
+      'string',
       to === 'number'
         ? BigNumber.from(hex).toNumber()
         : ethersUtils.toUtf8String(hex),
-  });
+    );

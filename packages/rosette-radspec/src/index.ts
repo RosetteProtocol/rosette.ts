@@ -5,21 +5,19 @@ import type { Transaction } from '@blossom-labs/rosette-types';
 import type { Fetcher } from '@blossom-labs/rosette-core';
 
 import type { providers } from 'ethers';
+import { ethers } from 'ethers';
 
 import { decodeCalldata } from './decoder';
 import { defaultHelpers } from './helpers';
 import { evaluateRaw } from './lib';
 import type { EvaluatorOptions } from './evaluator';
 import { getDefaultFetcher } from './fetcher';
+import { getSigHash } from './utils';
 
 export interface EvaluateOptions {
   userHelpers?: Record<string, any>;
   fetcher?: Fetcher;
 }
-
-const getSigHash = (txData: string): string => {
-  return txData.substring(0, 10);
-};
 
 /**
   * Evaluate a radspec expression for a transaction
@@ -64,8 +62,9 @@ async function evaluate(
 
   const evaluatorOptions: EvaluatorOptions = {
     availableHelpers,
+    fetcher,
     transaction,
-    provider,
+    provider: provider ?? ethers.getDefaultProvider(),
   };
   // Evaluate expression with bindings from the transaction data
   return evaluateRaw(notice, parameters, evaluatorOptions);
