@@ -11,6 +11,7 @@ import rosetteStoneAbi from '../abis/RosetteStone.json';
 import { Config, DEFAULT_NETWORK } from '../configuration';
 import { getBytecodeHash } from '../utils/web3';
 import { buildEntryId } from './subgraph-connector/helpers';
+import { UnsupportedNetworkError } from '../errors';
 
 export type FetcherOptions = {
   ipfsGateway?: string;
@@ -33,7 +34,7 @@ export class Fetcher {
     const config = Config[rosetteNetworkId ?? DEFAULT_NETWORK];
 
     if (!config) {
-      throw new Error('Unsupported network');
+      throw new UnsupportedNetworkError();
     }
 
     this.subgraphConnector = new SubgraphConnector(config.subgraphUrl);

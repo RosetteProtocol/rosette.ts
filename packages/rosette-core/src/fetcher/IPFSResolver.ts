@@ -23,14 +23,18 @@ export class IPFSResolver {
 
       try {
         response = await fetch(url);
-      } catch (_) {
-        throw new Error(`Couldn't fetch ${url}.`);
+      } catch (error_) {
+        const error = <Error>error_;
+        throw new Error(`Couldn't fetch ${url}. ${error.message}`);
       }
 
       try {
         data = await response.json();
-      } catch (_) {
-        throw new Error(`Couldn't parse the result of ${url} as JSON.`);
+      } catch (error_) {
+        const error = <Error>error_;
+        throw new Error(
+          `Couldn't parse the result of ${url} as JSON. ${error.message}`,
+        );
       }
 
       return data;

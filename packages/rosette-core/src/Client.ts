@@ -27,7 +27,9 @@ export class Client {
     });
 
     if (!description) {
-      throw new Error("Transaction provided couldn't be described");
+      throw new DescriptionNotFoundError(
+        "Transaction provided couldn't be described",
+      );
     }
 
     return description;
