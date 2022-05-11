@@ -1,12 +1,16 @@
+import {
+  DEFAULT_TEST_SERVER_CONFIG,
+  contractFixture,
+  setUpTestServer,
+  subgraphFixture,
+} from '@blossom-labs/rosette-test';
 import { providers } from 'ethers';
 
 import { Fetcher } from '../fetcher/Fetcher';
-import { TEST_NETWORK, TEST_RPC_ENDPOINT } from './fixtures/helpers';
-import { setUpTestServer } from './fixtures/server';
-import contractFixture from './fixtures/data/contract.json';
-import subgraphFixture from './fixtures/data/subgraph.json';
 
 const sigHashes = subgraphFixture.data.contract.functions.map((f) => f.sigHash);
+
+const { network, ipfsGateway, rpcEndpoint } = DEFAULT_TEST_SERVER_CONFIG;
 
 describe('Fetcher', () => {
   let fetcher: Fetcher;
@@ -15,10 +19,11 @@ describe('Fetcher', () => {
   setUpTestServer();
 
   beforeEach(() => {
-    provider = new providers.JsonRpcProvider(TEST_RPC_ENDPOINT);
+    provider = new providers.JsonRpcProvider(rpcEndpoint);
     fetcher = new Fetcher({
-      rosetteNetworkId: TEST_NETWORK,
-      rpcEndpoint: TEST_RPC_ENDPOINT,
+      ipfsGateway,
+      rosetteNetworkId: network,
+      rpcEndpoint,
     });
   });
 
@@ -34,7 +39,7 @@ describe('Fetcher', () => {
 
       expect(fnEntry).toMatchInlineSnapshot(`
         {
-          "abi": "function sign(uint256)",
+          "abi": "function sign(uint256 _guidelineVersion)",
           "cid": "QmPeWHhDFEiDStyADgd392kmDV4E5hgWVgyG3KL4i8tkbc",
           "disputed": false,
           "notice": "Sign guideline \`_guidelineVersion\`",
@@ -53,7 +58,7 @@ describe('Fetcher', () => {
 
       expect(fnEntry).toMatchInlineSnapshot(`
         {
-          "abi": "function removeEntry(bytes32,bytes4)",
+          "abi": "function removeEntry(bytes32 _scope, bytes4 _sig)",
           "cid": "QmNUy3tgcBwFhWrbuvaXGSgx5jrtFAqr5kU5ksKtxHRpjU",
           "disputed": false,
           "notice": "Remove an entry from the registry with \`_scope\` and \`_sig\`",
@@ -73,7 +78,7 @@ describe('Fetcher', () => {
 
       expect(fnEntry).toMatchInlineSnapshot(`
         {
-          "abi": "function upsertEntry(bytes32,bytes4,bytes) payable",
+          "abi": "function upsertEntry(bytes32 _scope, bytes4 _sig, bytes _cid) payable",
           "cid": "QmQBWU4C9y9hQzw3NFiBsYPD21V1aFpDKTz6eZzgqmBS88",
           "disputed": 2,
           "notice": "Upsert an entry with \`_scope\` and \`_sig\`",

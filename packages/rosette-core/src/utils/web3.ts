@@ -1,6 +1,7 @@
-import type { Address } from '@blossom-labs/rosette-types';
-import type { providers } from 'ethers';
 import { utils } from 'ethers';
+import type { providers } from 'ethers';
+
+import { Address } from '../types';
 
 export const getBytecodeHash = async (
   provider: providers.Provider,

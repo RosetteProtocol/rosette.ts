@@ -1,17 +1,31 @@
 import { utils } from 'ethers';
 import { graphql, rest } from 'msw';
-import { setupServer } from 'msw/node';
+import { setupServer, SetupServerApi } from 'msw/node';
 
-import rosetteStoneAbi from '../../abis/RosetteStone.json';
+import rosetteStoneAbi from '../abis/RosetteStone.json';
 import subgraphFixture from './data/subgraph.json';
 import contractFixture from './data/contract.json';
 import ipfsResponse from './data/ipfs.json';
-import { DEFAULT_IPFS_GATEWAY } from '../../fetcher/IPFSResolver';
-import { TEST_NETWORK, TEST_RPC_ENDPOINT } from './helpers';
 
 const rosetteStoneInterface = new utils.Interface(rosetteStoneAbi);
 
-const handlers = [
+type TestServerConfig = {
+  ipfsGateway?: string;
+  network?: number;
+  rpcEndpoint?: string;
+};
+
+export const DEFAULT_TEST_SERVER_CONFIG = {
+  network: 4,
+  ipfsGateway: 'https://ipfs.io/ipfs/',
+  rpcEndpoint: 'http://localhost:8545/',
+};
+
+const createHandlers = ({
+  ipfsGateway,
+  network,
+  rpcEndpoint,
+}: Required<TestServerConfig>) => [
   graphql.operation((req, res, ctx) => {
     const query = req.body?.query;
     const fnEntries = subgraphFixture.data.contract.functions;
@@ -50,7 +64,7 @@ const handlers = [
 
     return res(ctx.status(200), ctx.data(payload));
   }),
-  rest.post(TEST_RPC_ENDPOINT, (req, res, ctx) => {
+  rest.post(rpcEndpoint, (req, res, ctx) => {
     const isObject = typeof req.body === 'object';
     const reqBody = req.body as Record<string, any>;
 
@@ -59,7 +73,7 @@ const handlers = [
       switch (method) {
         case 'net_version':
         case 'eth_chainId':
-          return res(ctx.status(200), ctx.json({ result: TEST_NETWORK }));
+          return res(ctx.status(200), ctx.json({ result: network }));
         case 'eth_call': {
           const [tx] = reqBody.params;
           const txDescription = rosetteStoneInterface.parseTransaction(tx);
@@ -96,7 +110,7 @@ const handlers = [
       }
     }
   }),
-  rest.get(`${DEFAULT_IPFS_GATEWAY}:cid`, (req, res, ctx) => {
+  rest.get(`${ipfsGateway}:cid`, (req, res, ctx) => {
     const cid = req.params.cid;
     const requestedMetadata = ipfsResponse[cid as keyof typeof ipfsResponse];
 
@@ -108,10 +122,17 @@ const handlers = [
   }),
 ];
 
-export const setUpTestServer = () => {
-  const server = setupServer(...handlers);
+export const setUpTestServer = (config: TestServerConfig = {}) => {
+  let server: SetupServerApi;
 
   beforeAll(() => {
+    server = setupServer(
+      ...createHandlers({
+        ...config,
+        ...DEFAULT_TEST_SERVER_CONFIG,
+      }),
+    );
+
     server.listen();
   });
 

@@ -1,7 +1,6 @@
 /**
  * @module radspec
  */
-import type { Transaction } from '@blossom-labs/rosette-types';
 import type { Fetcher } from '@blossom-labs/rosette-core';
 
 import type { providers } from 'ethers';
@@ -13,6 +12,8 @@ import { evaluateRaw } from './lib';
 import type { EvaluatorOptions } from './evaluator';
 import { getDefaultFetcher } from './fetcher';
 import { getSigHash } from './utils';
+import { NotFoundError } from './errors';
+import { Transaction } from './types';
 
 export interface EvaluateOptions {
   userHelpers?: Record<string, any>;
@@ -44,7 +45,7 @@ async function evaluate(
   transaction: Transaction,
   provider: providers.Provider,
   options: EvaluateOptions,
-) {
+): Promise<string | undefined> {
   const { fetcher = getDefaultFetcher(), userHelpers = {} } = options;
   const sigHash = getSigHash(transaction.data);
   const { abi, notice } = await fetcher.entry(
@@ -54,7 +55,7 @@ async function evaluate(
   );
 
   if (!abi || !notice) {
-    throw new Error(`No description found for method ${sigHash}`);
+    throw new NotFoundError(`No description found for method ${sigHash}`);
   }
 
   const parameters = decodeCalldata(abi, transaction);
@@ -76,3 +77,5 @@ export { evaluate, evaluateRaw };
 // Re-export some commonly used inner functionality
 export { parse } from './parser';
 export { scan } from './scanner';
+
+export * from './errors';

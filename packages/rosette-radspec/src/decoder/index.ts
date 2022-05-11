@@ -1,7 +1,8 @@
-import type { Transaction } from '@blossom-labs/rosette-types';
 import { Interface } from 'ethers/lib/utils';
 
-import type { Bindings } from '../types';
+import { InvalidTransactionError } from '../errors';
+
+import type { Bindings, Transaction } from '../types';
 
 /**
  * Decode parameters from a calldata of a transaction.
@@ -17,18 +18,22 @@ export function decodeCalldata(
   // Create ethers interface object
   const ethersInterface = new Interface([abi]);
 
-  // Parse as an ethers TransactionDescription
-  const { args, functionFragment } =
-    ethersInterface.parseTransaction(transaction);
-
-  return functionFragment.inputs.reduce(
-    (parameters, input) => ({
-      [input.name]: {
-        type: input.type,
-        value: args[input.name],
-      },
-      ...parameters,
-    }),
-    {} as Bindings,
-  );
+  try {
+    // Parse as an ethers TransactionDescription
+    const { args, functionFragment } =
+      ethersInterface.parseTransaction(transaction);
+    return functionFragment.inputs.reduce(
+      (parameters, input) => ({
+        [input.name]: {
+          type: input.type,
+          value: args[input.name],
+        },
+        ...parameters,
+      }),
+      {} as Bindings,
+    );
+  } catch (error_) {
+    const error = <Error>error_;
+    throw new InvalidTransactionError(error.message);
+  }
 }

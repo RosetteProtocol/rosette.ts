@@ -1,14 +1,12 @@
 import { BigNumber, Contract, utils as ethersUtils } from 'ethers';
 
-import type { Address } from '@blossom-labs/rosette-types';
-
 import {
   ERC20_SYMBOL_BYTES32_ABI,
   ERC20_SYMBOL_DECIMALS_ABI,
   ETH,
 } from './lib/token';
 import { formatBN, tenPow } from './lib/formatBN';
-import type { RadspecHelper } from '../types';
+import type { Address, RadspecHelper } from '../types';
 import { TypedValue } from '../evaluator';
 
 export const tokenAmount: RadspecHelper =

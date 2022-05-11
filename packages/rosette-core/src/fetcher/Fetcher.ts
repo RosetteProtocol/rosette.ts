@@ -1,10 +1,9 @@
-import type { Address } from '@blossom-labs/rosette-types';
 import { Contract, providers } from 'ethers';
 import LRUCache from 'lru-cache';
 
 import { toUtf8String } from 'ethers/lib/utils';
 
-import type { FnEntry, Network } from '../types';
+import type { Address, FnEntry, Network } from '../types';
 import { IPFSResolver } from './IPFSResolver';
 import { SubgraphConnector } from './subgraph-connector/SubgraphConnector';
 import rosetteStoneAbi from '../abis/RosetteStone.json';

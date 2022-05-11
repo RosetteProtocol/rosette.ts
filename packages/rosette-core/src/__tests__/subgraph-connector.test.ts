@@ -1,8 +1,12 @@
+import {
+  DEFAULT_TEST_SERVER_CONFIG,
+  setUpTestServer,
+  subgraphFixture,
+} from '@blossom-labs/rosette-test';
+
 import { SubgraphConnector } from '../fetcher/subgraph-connector/SubgraphConnector';
-import { TEST_NETWORK } from './fixtures/helpers';
-import subgraphFixture from './fixtures/data/subgraph.json';
-import { setUpTestServer } from './fixtures/server';
 import { Config } from '../configuration';
+import { Network } from '../types';
 
 describe('Subgraph Connector', () => {
   let subgraphConnector: SubgraphConnector;
@@ -11,7 +15,9 @@ describe('Subgraph Connector', () => {
   setUpTestServer();
 
   beforeEach(async () => {
-    subgraphConnector = new SubgraphConnector(Config[TEST_NETWORK].subgraphUrl);
+    subgraphConnector = new SubgraphConnector(
+      Config[DEFAULT_TEST_SERVER_CONFIG.network as Network].subgraphUrl,
+    );
   });
 
   describe("when fetching a contract's function entries", () => {
@@ -22,7 +28,7 @@ describe('Subgraph Connector', () => {
         [
           [
             {
-              "abi": "function sign(uint256)",
+              "abi": "function sign(uint256 _guidelineVersion)",
               "cid": "QmPeWHhDFEiDStyADgd392kmDV4E5hgWVgyG3KL4i8tkbc",
               "disputed": false,
               "notice": "Sign guideline \`_guidelineVersion\`",
@@ -50,7 +56,7 @@ describe('Subgraph Connector', () => {
         [
           [
             {
-              "abi": "function sign(uint256)",
+              "abi": "function sign(uint256 _guidelineVersion)",
               "cid": "QmPeWHhDFEiDStyADgd392kmDV4E5hgWVgyG3KL4i8tkbc",
               "disputed": false,
               "notice": "Sign guideline \`_guidelineVersion\`",
@@ -88,7 +94,7 @@ describe('Subgraph Connector', () => {
       expect(fnEntry).toMatchInlineSnapshot(`
         [
           {
-            "abi": "function sign(uint256)",
+            "abi": "function sign(uint256 _guidelineVersion)",
             "cid": "QmPeWHhDFEiDStyADgd392kmDV4E5hgWVgyG3KL4i8tkbc",
             "disputed": false,
             "notice": "Sign guideline \`_guidelineVersion\`",

@@ -1,9 +1,13 @@
-import type { Transaction } from '@blossom-labs/rosette-types';
+import {
+  setUpTestServer,
+  DEFAULT_TEST_SERVER_CONFIG,
+} from '@blossom-labs/rosette-test';
 import { providers } from 'ethers';
 
 import { Client } from '../Client';
-import { TEST_RPC_ENDPOINT } from './fixtures/helpers';
-import { setUpTestServer } from './fixtures/server';
+import { Transaction } from '../types';
+
+const { ipfsGateway, network, rpcEndpoint } = DEFAULT_TEST_SERVER_CONFIG;
 
 describe('Client', () => {
   let client: Client;
@@ -12,13 +16,15 @@ describe('Client', () => {
   setUpTestServer();
 
   beforeAll(() => {
-    provider = new providers.JsonRpcProvider(TEST_RPC_ENDPOINT);
+    provider = new providers.JsonRpcProvider(rpcEndpoint);
   });
 
   beforeEach(async () => {
     client = new Client({
       fetcherOptions: {
-        rpcEndpoint: TEST_RPC_ENDPOINT,
+        rpcEndpoint,
+        ipfsGateway,
+        rosetteNetworkId: network,
       },
     });
   });

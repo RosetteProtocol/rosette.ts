@@ -2,7 +2,6 @@
  * @module radspec/evaluator
  */
 
-import type { Transaction } from '@blossom-labs/rosette-types';
 import { BigNumber, utils as ethersUtils } from 'ethers';
 import type { providers } from 'ethers';
 
@@ -10,7 +9,7 @@ import type { Fetcher } from '@blossom-labs/rosette-core';
 
 import HelperManager from '../helpers/HelperManager';
 import { TYPES, isAddress, isInteger } from '../types/solidity';
-import type { AST, Bindings, Node } from '../types';
+import type { AST, Bindings, Node, Transaction } from '../types';
 import {
   BANG_EQUAL,
   EQUAL_EQUAL,
