@@ -5,7 +5,7 @@
       "functions": [
         {
           "id": "0xffdac63ea5cd5767b79bec5e972a17bae6dde90e0e60ff1a07546c1f073cfe94-0x2fb1b25f",
-          "abi": "function sign(uint256)",
+          "abi": "function sign(uint256 _guidelineVersion)",
           "cid": "QmPeWHhDFEiDStyADgd392kmDV4E5hgWVgyG3KL4i8tkbc",
           "disputed": false,
           "notice": "Sign guideline `_guidelineVersion`",
