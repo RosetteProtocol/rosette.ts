@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/BlossomLabs/rosette.ts#readme",
   "dependencies": {
+    "@blossom-labs/rosette-radspec": "workspace:^0.0.1",
     "@ethersproject/providers": "^5.6.4",
     "isomorphic-fetch": "^3.0.0",
     "lru-cache": "^7.9.0"

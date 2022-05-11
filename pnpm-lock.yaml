@@ -68,6 +68,7 @@ importers:
 
   packages/rosette-core:
     specifiers:
+      '@blossom-labs/rosette-radspec': workspace:^0.0.1
       '@blossom-labs/rosette-types': workspace:^0.0.1
       '@ethersproject/providers': ^5.6.4
       '@types/isomorphic-fetch': ^0.0.36
@@ -76,6 +77,7 @@ importers:
       isomorphic-fetch: ^3.0.0
       lru-cache: ^7.9.0
     dependencies:
+      '@blossom-labs/rosette-radspec': link:../rosette-radspec
       '@ethersproject/providers': 5.6.5
       isomorphic-fetch: 3.0.0
       lru-cache: 7.9.0
@@ -87,13 +89,11 @@ importers:
 
   packages/rosette-radspec:
     specifiers:
-      '@babel/runtime': ^7.1.2
       '@blossom-labs/rosette-core': workspace:^0.0.1
       '@blossom-labs/rosette-types': workspace:^0.0.1
       date-fns: ^2.26.0
       ethers: ^5.6.4
     dependencies:
-      '@babel/runtime': 7.17.9
       '@blossom-labs/rosette-core': link:../rosette-core
       date-fns: 2.28.0
     devDependencies:
@@ -1322,6 +1322,7 @@ packages:
     engines: {node: '>=6.9.0'}
     dependencies:
       regenerator-runtime: 0.13.9
+    dev: true
 
   /@babel/template/7.16.7:
     resolution: {integrity: sha512-I8j/x8kHUrbYRTUxXrrMbfCa7jxkE7tZre39x3kjr9hvI82cK1FfqLygotcWN5kdPGWcLdWMHpSBavse5tWw3w==}
@@ -6489,6 +6490,7 @@ packages:
 
   /regenerator-runtime/0.13.9:
     resolution: {integrity: sha512-p3VT+cOEgxFsRRA9X4lkI1E+k2/CtnKtU4gcxyaCUreilL/vqI6CdZ3wxVUx3UOUg+gnUOQQcRI7BmSI656MYA==}
+    dev: true
 
   /regenerator-transform/0.15.0:
     resolution: {integrity: sha512-LsrGtPmbYg19bcPHwdtmXwbW+TqNvtY4riE3P83foeHRroMbH6/2ddFBfab3t7kbzc7v7p4wbkIecHImqt0QNg==}

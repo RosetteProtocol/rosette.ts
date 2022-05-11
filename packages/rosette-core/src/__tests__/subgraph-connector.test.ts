@@ -4,7 +4,7 @@ import subgraphFixture from './fixtures/data/subgraph.json';
 import { setUpTestServer } from './fixtures/server';
 import { Config } from '../configuration';
 
-describe('Connector', () => {
+describe('Subgraph Connector', () => {
   let subgraphConnector: SubgraphConnector;
   const bytecodeHash = subgraphFixture.id;
 
