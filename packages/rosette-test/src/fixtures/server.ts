@@ -1,4 +1,5 @@
 import { utils } from 'ethers';
+import type { GraphQLHandler, RestHandler } from 'msw';
 import { graphql, rest } from 'msw';
 import type { SetupServerApi } from 'msw/node';
 import { setupServer } from 'msw/node';
@@ -26,7 +27,7 @@ const createHandlers = ({
   ipfsGateway,
   network,
   rpcEndpoint,
-}: Required<TestServerConfig>) => [
+}: Required<TestServerConfig>): (GraphQLHandler | RestHandler)[] => [
   graphql.operation((req, res, ctx) => {
     const query = req.body?.query;
     const fnEntries = subgraphFixture.data.contract.functions;
@@ -123,7 +124,7 @@ const createHandlers = ({
   }),
 ];
 
-export const setUpTestServer = (config: TestServerConfig = {}) => {
+export const setUpTestServer = (config: TestServerConfig = {}): void => {
   let server: SetupServerApi;
 
   beforeAll(() => {

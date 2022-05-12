@@ -81,7 +81,7 @@ describe('Fetcher', () => {
           "abi": "function upsertEntry(bytes32 _scope, bytes4 _sig, bytes _cid) payable",
           "cid": "QmQBWU4C9y9hQzw3NFiBsYPD21V1aFpDKTz6eZzgqmBS88",
           "disputed": 2,
-          "notice": "Upsert an entry with \`_scope\` and \`_sig\`",
+          "notice": "Upsert an entry with \`_scope\` and \`_sig\` with medata located in \`@fromHex(_cid)\`",
           "sigHash": "0xd3cd7efa",
         }
       `);
