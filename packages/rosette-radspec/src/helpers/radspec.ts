@@ -1,7 +1,9 @@
+import type { Transaction } from '@blossom-labs/rosette-core';
+
 import { decodeCalldata } from '../decoder';
 import { TypedValue } from '../evaluator';
 import { evaluateRaw } from '../lib';
-import type { RadspecHelper, Transaction } from '../types';
+import type { RadspecHelper } from '../types';
 import { getSigHash } from '../utils';
 
 export const radspec: RadspecHelper =

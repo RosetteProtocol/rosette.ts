@@ -1,8 +1,9 @@
+import type { Transaction } from '@blossom-labs/rosette-core';
 import { Interface } from 'ethers/lib/utils';
 
 import { InvalidTransactionError } from '../errors';
 
-import type { Bindings, Transaction } from '../types';
+import type { Bindings } from '../types';
 
 /**
  * Decode parameters from a calldata of a transaction.

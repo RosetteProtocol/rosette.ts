@@ -1,11 +1,11 @@
+import type { Transaction } from '@blossom-labs/rosette-core';
 import {
-  setUpTestServer,
   DEFAULT_TEST_SERVER_CONFIG,
+  setUpTestServer,
 } from '@blossom-labs/rosette-test';
 import { providers } from 'ethers';
 
 import { Client } from '../Client';
-import { Transaction } from '../types';
 
 const { ipfsGateway, network, rpcEndpoint } = DEFAULT_TEST_SERVER_CONFIG;
 

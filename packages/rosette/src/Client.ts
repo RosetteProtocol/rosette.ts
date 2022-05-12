@@ -1,10 +1,9 @@
+import { Fetcher } from '@blossom-labs/rosette-core';
+import type { FetcherOptions, Transaction } from '@blossom-labs/rosette-core';
 import { evaluate } from '@blossom-labs/rosette-radspec';
 import type { providers } from 'ethers';
 
 import { DescriptionNotFoundError } from './errors';
-import type { FetcherOptions } from './fetcher/Fetcher';
-import { Fetcher } from './fetcher/Fetcher';
-import { Transaction } from './types';
 
 export type ClientOptions = {
   fetcherOptions: FetcherOptions;

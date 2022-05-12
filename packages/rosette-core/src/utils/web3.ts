@@ -1,7 +1,7 @@
 import { utils } from 'ethers';
 import type { providers } from 'ethers';
 
-import { Address } from '../types';
+import type { Address } from '../types';
 
 export const getBytecodeHash = async (
   provider: providers.Provider,

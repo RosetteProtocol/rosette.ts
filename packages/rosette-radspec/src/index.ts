@@ -1,7 +1,7 @@
 /**
  * @module radspec
  */
-import type { Fetcher } from '@blossom-labs/rosette-core';
+import type { Fetcher, Transaction } from '@blossom-labs/rosette-core';
 
 import type { providers } from 'ethers';
 import { ethers } from 'ethers';
@@ -13,7 +13,6 @@ import type { EvaluatorOptions } from './evaluator';
 import { getDefaultFetcher } from './fetcher';
 import { getSigHash } from './utils';
 import { NotFoundError } from './errors';
-import { Transaction } from './types';
 
 export interface EvaluateOptions {
   userHelpers?: Record<string, any>;

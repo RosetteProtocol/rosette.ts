@@ -1,6 +1,7 @@
 import { utils } from 'ethers';
 import { graphql, rest } from 'msw';
-import { setupServer, SetupServerApi } from 'msw/node';
+import type { SetupServerApi } from 'msw/node';
+import { setupServer } from 'msw/node';
 
 import rosetteStoneAbi from '../abis/RosetteStone.json';
 import subgraphFixture from './data/subgraph.json';

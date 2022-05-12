@@ -6,7 +6,7 @@ import {
 
 import { SubgraphConnector } from '../fetcher/subgraph-connector/SubgraphConnector';
 import { Config } from '../configuration';
-import { Network } from '../types';
+import type { Network } from '../types';
 
 describe('Subgraph Connector', () => {
   let subgraphConnector: SubgraphConnector;

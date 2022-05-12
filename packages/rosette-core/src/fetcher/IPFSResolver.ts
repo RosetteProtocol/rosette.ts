@@ -1,6 +1,6 @@
 import fetch from 'isomorphic-fetch';
 
-export const DEFAULT_IPFS_GATEWAY = 'https://ipfs.blossom.software/ipfs/';
+const DEFAULT_IPFS_GATEWAY = 'https://ipfs.blossom.software/ipfs/';
 
 const buildIPFSUrlTemplate = (ipfsGateway: string): string =>
   `${ipfsGateway}${

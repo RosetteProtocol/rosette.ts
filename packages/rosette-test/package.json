@@ -10,7 +10,6 @@
   "author": "Blossom Labs",
   "license": "MIT",
   "devDependencies": {
-    "ethers": "^5.6.4",
     "msw": "^0.39.2"
   },
   "peerDependencies": {

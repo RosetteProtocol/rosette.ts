@@ -1,3 +1,4 @@
+import type { Transaction } from '@blossom-labs/rosette-core';
 import { Fetcher } from '@blossom-labs/rosette-core';
 import {
   DEFAULT_TEST_SERVER_CONFIG,
@@ -7,7 +8,6 @@ import type { providers } from 'ethers';
 import { ethers } from 'ethers';
 
 import { evaluate } from '../';
-import type { Transaction } from '../types';
 
 // const XDAI_ENDPOINT = 'https://rpc.xdaichain.com';
 

@@ -1,3 +1,4 @@
+import type { Address } from '@blossom-labs/rosette-core';
 import { BigNumber, Contract, utils as ethersUtils } from 'ethers';
 
 import {
@@ -6,7 +7,7 @@ import {
   ETH,
 } from './lib/token';
 import { formatBN, tenPow } from './lib/formatBN';
-import type { Address, RadspecHelper } from '../types';
+import type { RadspecHelper } from '../types';
 import { TypedValue } from '../evaluator';
 
 export const tokenAmount: RadspecHelper =

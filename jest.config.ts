@@ -24,21 +24,27 @@ const config: Config.InitialOptions = {
   projects: [
     {
       ...baseConfig,
+      displayName: 'rosette',
+      testEnvironment: 'jsdom',
+      testRegex: 'packages/rosette/src/__tests__/.*\\.test\\.ts(x)?$',
+    },
+    {
+      ...baseConfig,
       displayName: 'rosette-core',
       testEnvironment: 'jsdom',
       testRegex: 'packages/rosette-core/src/__tests__/.*\\.test\\.ts(x)?$',
     },
     {
       ...baseConfig,
-      displayName: 'rosette-react',
-      testEnvironment: 'jsdom',
-      testRegex: 'packages/rosette-react/src/__tests__/.*\\.test\\.ts(x)?$',
-    },
-    {
-      ...baseConfig,
       displayName: 'rosette-radspec',
       testEnvironment: 'jsdom',
       testRegex: 'packages/rosette-radspec/src/__tests__/.*\\.test\\.ts(x)?$',
+    },
+    {
+      ...baseConfig,
+      displayName: 'rosette-react',
+      testEnvironment: 'jsdom',
+      testRegex: 'packages/rosette-react/src/__tests__/.*\\.test\\.ts(x)?$',
     },
   ],
   reporters: ['default', 'github-actions'],
