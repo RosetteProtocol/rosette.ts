@@ -11,17 +11,32 @@ import { TYPES, isAddress, isInteger } from '../types/solidity';
 import type { AST, Bindings, Node } from '../types';
 import {
   BANG_EQUAL,
+  BinaryExpression,
+  BoolLiteral,
+  BytesLiteral,
+  CallExpression,
+  ComparisonExpression,
+  DefaultExpression,
   EQUAL_EQUAL,
+  ExpressionStatement,
   GREATER,
   GREATER_EQUAL,
+  GroupedExpression,
+  HelperFunction,
+  Identifier,
   LESS,
   LESS_EQUAL,
   MINUS,
   MODULO,
+  MonologueStatement,
+  NodeType,
+  NumberLiteral,
   PLUS,
   POWER,
+  PropertyAccessExpression,
   SLASH,
   STAR,
+  TernaryExpression,
 } from '../types';
 
 export interface EvaluatorOptions {
@@ -62,21 +77,12 @@ export class TypedValue {
     }
   }
 
-  get type() {
+  get type(): string {
     return this.#type;
   }
 
-  get value() {
+  get value(): any {
     return this.#value;
-  }
-
-  /**
-   * Get the string representation of the wrapped value
-   *
-   * @return {string}
-   */
-  toString() {
-    return this.#value.toString();
   }
 }
 
@@ -90,8 +96,8 @@ export class TypedValue {
  * @param options An options object
  */
 export class Evaluator {
-  #ast: any;
-  #bindings: any;
+  #ast: AST;
+  #bindings: Bindings;
   // Tx data
   #from: TypedValue | undefined;
   #to: TypedValue | undefined;
@@ -130,15 +136,8 @@ export class Evaluator {
    *
    * @param nodes
    */
-  async evaluateNodes(nodes: Node[]): Promise<TypedValue[]> {
-    const resolvedNodes = Promise.all(nodes.map(this.evaluateNode.bind(this)));
-    return (await resolvedNodes).map((resolvedNode) => {
-      if (resolvedNode instanceof TypedValue) {
-        return resolvedNode.value;
-      } else {
-        return resolvedNode;
-      }
-    });
+  #evaluateNodes(nodes: Node[]): Promise<(TypedValue | undefined)[]> {
+    return Promise.all(nodes.map(this.#evaluateNode.bind(this)));
   }
 
   /**
@@ -147,45 +146,45 @@ export class Evaluator {
    * @param node The node to be evaluated.
    * @return {Promise<string>}
    */
-  async evaluateNode(node: Node): Promise<TypedValue | undefined> {
-    if (node.type === 'ExpressionStatement') {
-      const resolvedNodes = await this.evaluateNodes(node.body);
+  async #evaluateNode(node: Node): Promise<TypedValue | undefined> {
+    if (node.type === ExpressionStatement) {
+      const typedValues = await this.#evaluateNodes(node.body);
 
-      return new TypedValue('string', resolvedNodes.join(' '));
+      return new TypedValue('string', this.#stringifyTypes(typedValues));
     }
 
-    if (node.type === 'GroupedExpression') {
-      return this.evaluateNode(node.body);
+    if (node.type === GroupedExpression) {
+      return this.#evaluateNode(node.body);
     }
 
-    if (node.type === 'MonologueStatement') {
+    if (node.type === MonologueStatement) {
       return new TypedValue('string', node.value);
     }
 
-    if (node.type === 'StringLiteral') {
+    if (node.type === NodeType.StringLiteral) {
       return new TypedValue('string', node.value || '');
     }
 
-    if (node.type === 'NumberLiteral') {
+    if (node.type === NumberLiteral) {
       return new TypedValue('int256', node.value);
     }
 
-    if (node.type === 'BytesLiteral') {
+    if (node.type === BytesLiteral) {
       const length = Math.ceil((node.value.length - 2) / 2);
       if (length > 32) {
-        this.panic('Byte literal represents more than 32 bytes');
+        this.#panic('Byte literal represents more than 32 bytes');
       }
 
       return new TypedValue(`bytes${length}`, node.value);
     }
 
-    if (node.type === 'BoolLiteral') {
+    if (node.type === BoolLiteral) {
       return new TypedValue('bool', node.value === 'true');
     }
 
-    if (node.type === 'BinaryExpression') {
-      const left = await this.evaluateNode(node.left);
-      const right = await this.evaluateNode(node.right);
+    if (node.type === BinaryExpression) {
+      const left = await this.#evaluateNode(node.left);
+      const right = await this.#evaluateNode(node.right);
 
       if (left && right) {
         // String concatenation
@@ -201,7 +200,7 @@ export class Evaluator {
 
         // TODO Additionally check that the type is signed if subtracting
         if (!isInteger(left.type) || !isInteger(right.type)) {
-          this.panic(
+          this.#panic(
             `Cannot evaluate binary expression "${node.operator}" for non-integer types "${left.type}" and "${right.type}"`,
           );
         }
@@ -220,24 +219,27 @@ export class Evaluator {
           case MODULO:
             return new TypedValue('int256', left.value.mod(right.value));
           default:
-            this.panic(`Undefined binary operator "${node.operator}"`);
+            this.#panic(`Undefined binary operator "${node.operator}"`);
         }
       }
     }
 
-    if (node.type === 'ComparisonExpression') {
-      const left = await this.evaluateNode(node.left);
-      const right = await this.evaluateNode(node.right);
+    if (node.type === ComparisonExpression) {
+      const left = await this.#evaluateNode(node.left);
+      const right = await this.#evaluateNode(node.right);
 
       if (left && right) {
         let leftValue = left.value;
         let rightValue = right.value;
 
-        const bothTypesAddress = (left: TypedValue, right: TypedValue) =>
+        const bothTypesAddress = (
+          left: TypedValue,
+          right: TypedValue,
+        ): boolean =>
           // isAddress is true if type is address or bytes with size less than 20
           isAddress(left.type) && isAddress(right.type);
 
-        const bothTypesBytes = (left: TypedValue, right: TypedValue) =>
+        const bothTypesBytes = (left: TypedValue, right: TypedValue): boolean =>
           TYPES.bytes.isType(left.type) && TYPES.bytes.isType(right.type);
 
         // Conversion to BigNumber for comparison will happen if:
@@ -247,7 +249,7 @@ export class Evaluator {
           leftValue = BigNumber.from(leftValue);
           rightValue = BigNumber.from(rightValue);
         } else if (!isInteger(left.type) || !isInteger(right.type)) {
-          this.panic(
+          this.#panic(
             `Cannot evaluate binary expression "${node.operator}" for non-integer or fixed-size bytes types "${left.type}" and "${right.type}"`,
           );
         }
@@ -269,16 +271,16 @@ export class Evaluator {
       }
     }
 
-    if (node.type === 'TernaryExpression') {
-      if ((await this.evaluateNode(node.predicate))?.value) {
-        return this.evaluateNode(node.left);
+    if (node.type === TernaryExpression) {
+      if ((await this.#evaluateNode(node.predicate))?.value) {
+        return this.#evaluateNode(node.left);
       }
 
-      return this.evaluateNode(node.right);
+      return this.#evaluateNode(node.right);
     }
 
-    if (node.type === 'DefaultExpression') {
-      const left = await this.evaluateNode(node.left);
+    if (node.type === DefaultExpression) {
+      const left = await this.#evaluateNode(node.left);
       let leftFalsey;
 
       if (left) {
@@ -289,37 +291,37 @@ export class Evaluator {
         } else {
           leftFalsey = !left.value;
         }
-        return leftFalsey ? this.evaluateNode(node.right) : left;
+        return leftFalsey ? this.#evaluateNode(node.right) : left;
       }
     }
 
-    if (node.type === 'CallExpression' && node) {
+    if (node && node.type === CallExpression) {
       let target: TypedValue | undefined;
 
       // Inject self
       if (
         this.#to &&
-        node.target.type === 'Identifier' &&
+        node.target.type === Identifier &&
         node.target.value === 'self'
       ) {
         target = this.#to;
       } else {
-        target = await this.evaluateNode(node.target);
+        target = await this.#evaluateNode(node.target);
       }
 
       if (target?.type !== 'bytes20' && target?.type !== 'address') {
-        this.panic('Target of call expression was not an address');
+        this.#panic('Target of call expression was not an address');
       } else if (!ethersUtils.isAddress(target.value)) {
-        this.panic(`Invalid address "${this.#value}"`);
+        this.#panic(`Invalid address "${this.#value}"`);
       }
 
-      const inputs = await this.evaluateNodes(node.inputs ?? []);
+      const inputs = await this.#evaluateNodes(node.inputs ?? []);
       const outputs = node.outputs ?? [];
       const selectedReturnValueIndex = outputs.findIndex(
         (output) => output.selected,
       );
       if (selectedReturnValueIndex === -1) {
-        this.panic(
+        this.#panic(
           `No selected return value for function call "${node.callee}"`,
         );
       }
@@ -329,8 +331,8 @@ export class Evaluator {
         {
           name: node.callee,
           type: 'function',
-          inputs: inputs.map(({ type }) => ({
-            type,
+          inputs: inputs.map((t) => ({
+            type: t ? t.type : '',
           })),
           outputs: outputs.map(({ type }) => ({
             type,
@@ -342,7 +344,7 @@ export class Evaluator {
 
       const txData = ethersInterface.encodeFunctionData(
         node.callee,
-        inputs.map((input) => input.value.toString()),
+        inputs.map((input) => (input ? input.value.toString() : '')),
       );
 
       const data = await this.provider.call({
@@ -358,14 +360,15 @@ export class Evaluator {
       return new TypedValue(returnType, decodeData[selectedReturnValueIndex]);
     }
 
-    if (node.type === 'HelperFunction') {
+    if (node.type === HelperFunction) {
       const helperName = node.name;
 
       if (helperName && !this.helperManager.exists(helperName)) {
-        this.panic(`${helperName} helper function is not defined`);
+        this.#panic(`${helperName} helper function is not defined`);
       }
 
-      const inputs = await this.evaluateNodes(node.inputs ?? []);
+      const inputs = await this.#evaluateNodes(node.inputs ?? []);
+
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       const result = await this.helperManager.execute(helperName!, inputs, {
         evaluator: this,
@@ -374,10 +377,7 @@ export class Evaluator {
       return new TypedValue(result.type, result.value);
     }
 
-    if (
-      node.type === 'PropertyAccessExpression' &&
-      node.target.value === 'msg'
-    ) {
+    if (node.type === PropertyAccessExpression && node.target.value === 'msg') {
       if (node.property === 'value') {
         return this.#value;
       }
@@ -390,21 +390,22 @@ export class Evaluator {
         return this.#data;
       }
 
-      this.panic(
+      this.#panic(
         `Expecting value, sender or data property for msg identifier but got: ${node.property}`,
       );
     }
 
-    if (node.type === 'Identifier') {
+    if (node.type === Identifier) {
       if (node.value === 'self') {
         return this.#to;
       }
 
       if (!this.#bindings[node.value]) {
-        this.panic(`Undefined binding "${node.value}"`);
+        this.#panic(`Undefined binding "${node.value}"`);
       }
 
       const binding = this.#bindings[node.value];
+
       return new TypedValue(binding.type, binding.value);
     }
   }
@@ -415,8 +416,8 @@ export class Evaluator {
    * @return The result of the evaluation.
    */
   async evaluate(): Promise<string> {
-    return this.evaluateNodes(this.#ast.body).then((evaluatedNodes) => {
-      return evaluatedNodes.join('');
+    return this.#evaluateNodes(this.#ast.body).then((typedValues) => {
+      return this.#stringifyTypes(typedValues);
     });
   }
 
@@ -425,8 +426,12 @@ export class Evaluator {
    *
    * @param msg The error message to report.
    */
-  panic(msg: string) {
+  #panic(msg: string): void {
     throw new Error(`Error: ${msg}`);
+  }
+
+  #stringifyTypes(nodes: (TypedValue | undefined)[]): string {
+    return nodes.map((n) => n?.value ?? '').join('');
   }
 }
 

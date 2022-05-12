@@ -185,7 +185,7 @@ export class Parser {
    * @param astBody Subtree of AST being walked
    * @return A node.
    */
-  addition(astBody: Node[]) {
+  addition(astBody: Node[]): Node | undefined {
     let node = this.multiplication(astBody);
 
     while (this.matches(MINUS, PLUS)) {
@@ -616,7 +616,7 @@ export class Parser {
    * Prints an error with location information to `stderr`
    * and sets the parser state to `PARSER_STATE.ERROR`
    */
-  report(error: string) {
+  report(error: string): void {
     this.#state = ParserState.ERROR;
     console.error(`Error (${this.#cursor}): ${error}`);
   }

@@ -78,10 +78,8 @@ export class Scanner {
 
   /**
    * Scans a single token from source and pushes it to `Scanner.tokens`.
-   *
-   * @return {void}
    */
-  scanToken() {
+  scanToken(): void {
     const current = this.consume();
 
     if (current === '`') {
@@ -235,7 +233,7 @@ export class Scanner {
    * @param type The token type
    * @param value The token value
    */
-  emitToken(type: TokenType, value?: string) {
+  emitToken(type: TokenType, value?: string): void {
     const token: Token = { type };
 
     if (value) {
@@ -316,7 +314,7 @@ export class Scanner {
    *
    * @param error The error to be printed.
    */
-  report(error: string) {
+  report(error: string): void {
     this.#state = ScannerState.ERROR;
     console.error(`Error (${this.#cursor}): ${error}`);
   }

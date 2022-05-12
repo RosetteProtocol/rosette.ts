@@ -38,10 +38,11 @@ export default class HelperManager {
    */
   execute(
     helper: string,
-    inputs: TypedValue[],
+    inputs: (TypedValue | undefined)[],
     config: HelperConfig,
   ): ReturnType<ReturnType<RadspecHelper>> {
-    inputs = inputs.map((input) => input.value); // pass values directly
+    inputs = inputs.map((i) => (i ? i.value : '')); // pass values directly
+    console.log(inputs);
     return this.availableHelpers[helper](config)(...inputs);
   }
 }
