@@ -58,4 +58,4 @@ jobs:
         run: pnpm build
 
       - name: Tests
-        run: pnpm test:coverage
+        run: pnpm test:ci

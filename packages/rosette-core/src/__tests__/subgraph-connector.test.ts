@@ -10,7 +10,8 @@ import type { Network } from '../types';
 
 describe('Subgraph Connector', () => {
   let subgraphConnector: SubgraphConnector;
-  const bytecodeHash = subgraphFixture.id;
+  const bytecodeHash =
+    '0xffdac63ea5cd5767b79bec5e972a17bae6dde90e0e60ff1a07546c1f073cfe94';
 
   setUpTestServer();
 
@@ -84,9 +85,10 @@ describe('Subgraph Connector', () => {
   });
 
   describe('when fetching a function entry', () => {
-    const sigHash = subgraphFixture.data.contract.functions[0].sigHash;
+    const sigHash =
+      subgraphFixture[bytecodeHash].data.contract.functions[0].sigHash;
     const disputedEntrySigHash =
-      subgraphFixture.data.contract.functions[2].sigHash;
+      subgraphFixture[bytecodeHash].data.contract.functions[2].sigHash;
 
     it('should return a correct function entry', async () => {
       const fnEntry = await subgraphConnector.entry(bytecodeHash, sigHash);

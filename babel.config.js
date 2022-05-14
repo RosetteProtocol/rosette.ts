@@ -3,7 +3,12 @@ module.exports = {
 
   overrides: [
     {
-      include: ['./packages/rosette-core', './packages/rosette-react'],
+      include: [
+        './packages/rosette',
+        './packages/rosette-core',
+        './packages/rosette-radspec',
+        './packages/rosette-react',
+      ],
       presets: [['@babel/preset-env', { targets: 'defaults, not ie 11' }]],
     },
   ],

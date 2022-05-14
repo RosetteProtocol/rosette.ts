@@ -1,15 +1,13 @@
-import { utils } from 'ethers';
 import type { GraphQLHandler, RestHandler } from 'msw';
 import { graphql, rest } from 'msw';
 import type { SetupServerApi } from 'msw/node';
 import { setupServer } from 'msw/node';
 
-import rosetteStoneAbi from '../abis/RosetteStone.json';
-import subgraphFixture from './data/subgraph.json';
-import contractFixture from './data/contract.json';
+import subgraph from './data/subgraph.json';
 import ipfsResponse from './data/ipfs.json';
+import type { SubgraphFixture } from '../types';
 
-const rosetteStoneInterface = new utils.Interface(rosetteStoneAbi);
+const subgraphFixture: SubgraphFixture = subgraph;
 
 type TestServerConfig = {
   ipfsGateway?: string;
@@ -23,14 +21,13 @@ export const DEFAULT_TEST_SERVER_CONFIG = {
   rpcEndpoint: 'http://localhost:8545/',
 };
 
-const createHandlers = ({
+const createBaseHandlers = ({
   ipfsGateway,
-  network,
-  rpcEndpoint,
 }: Required<TestServerConfig>): (GraphQLHandler | RestHandler)[] => [
   graphql.operation((req, res, ctx) => {
     const query = req.body?.query;
-    const fnEntries = subgraphFixture.data.contract.functions;
+    const variables = req.body?.variables;
+
     const isContractQuery = query?.includes('contract(id');
     const isFnEntryQuery = query.includes('function(id');
 
@@ -45,72 +42,35 @@ const createHandlers = ({
 
     let payload: Record<string, any>;
 
-    const allowedDisputed = query.includes('disputed: true');
-
     if (isContractQuery) {
+      const { contractId, allowDisputed } = variables;
+      const selectedContract = subgraphFixture[contractId];
+
+      const contractResponse = selectedContract
+        ? {
+            functions: selectedContract.data.contract.functions.filter((f) =>
+              !allowDisputed ? !f.disputed : true,
+            ),
+          }
+        : null;
+
       payload = {
-        contract: {
-          functions: fnEntries.filter((f) =>
-            allowedDisputed ? true : Boolean(f.disputed) === false,
-          ),
-        },
+        contract: contractResponse,
       };
     } else {
-      const fnEntry = fnEntries.find(
-        ({ id, disputed }) =>
-          query.includes(id) && Boolean(disputed) === allowedDisputed,
-      );
+      const { entryId, allowDisputed } = variables;
+      const [bytecodeHash] = variables.entryId.split('-');
+      const selectedContract = subgraphFixture[bytecodeHash];
+      const selectedFnEntry =
+        selectedContract?.data.contract.functions.find(
+          ({ id, disputed }) =>
+            id === entryId && (!allowDisputed ? !disputed : true),
+        ) ?? null;
 
-      payload = { function: fnEntry ? { ...fnEntry } : null };
+      payload = { function: selectedFnEntry };
     }
 
     return res(ctx.status(200), ctx.data(payload));
-  }),
-  rest.post(rpcEndpoint, (req, res, ctx) => {
-    const isObject = typeof req.body === 'object';
-    const reqBody = req.body as Record<string, any>;
-
-    if (isObject) {
-      const method = reqBody.method;
-      switch (method) {
-        case 'net_version':
-        case 'eth_chainId':
-          return res(ctx.status(200), ctx.json({ result: network }));
-        case 'eth_call': {
-          const [tx] = reqBody.params;
-          const txDescription = rosetteStoneInterface.parseTransaction(tx);
-          const methodResult =
-            contractFixture.methods[
-              txDescription.name as keyof typeof contractFixture.methods
-            ];
-
-          if (methodResult) {
-            const encodedResult = rosetteStoneInterface.encodeFunctionResult(
-              txDescription.sighash,
-              methodResult,
-            );
-
-            return res(ctx.status(200), ctx.json({ result: encodedResult }));
-          }
-
-          return res(ctx.status(200), ctx.json({ result: '0x' }));
-        }
-        case 'eth_getCode': {
-          const [contractAddress] = reqBody.params;
-
-          if (!contractAddress || !utils.isAddress(contractAddress)) {
-            return res(ctx.status(404));
-          }
-
-          return res(
-            ctx.status(200),
-            ctx.json({
-              result: contractFixture.bytecode,
-            }),
-          );
-        }
-      }
-    }
   }),
   rest.get(`${ipfsGateway}:cid`, (req, res, ctx) => {
     const cid = req.params.cid;
@@ -129,13 +89,21 @@ export const setUpTestServer = (config: TestServerConfig = {}): void => {
 
   beforeAll(() => {
     server = setupServer(
-      ...createHandlers({
+      ...createBaseHandlers({
         ...config,
         ...DEFAULT_TEST_SERVER_CONFIG,
       }),
     );
 
-    server.listen();
+    server.listen({
+      onUnhandledRequest: (req) => {
+        if (req.url.origin === DEFAULT_TEST_SERVER_CONFIG.rpcEndpoint) {
+          return 'bypass';
+        }
+
+        return 'warn';
+      },
+    });
   });
 
   afterEach(() => server.resetHandlers());

@@ -8,7 +8,9 @@ import { providers } from 'ethers';
 
 import { Fetcher } from '../fetcher/Fetcher';
 
-const sigHashes = subgraphFixture.data.contract.functions.map((f) => f.sigHash);
+const sigHashes = subgraphFixture[
+  '0xffdac63ea5cd5767b79bec5e972a17bae6dde90e0e60ff1a07546c1f073cfe94'
+].data.contract.functions.map((f) => f.sigHash);
 
 const { network, ipfsGateway, rpcEndpoint } = DEFAULT_TEST_SERVER_CONFIG;
 
@@ -67,7 +69,7 @@ describe('Fetcher', () => {
       `);
     });
 
-    it('fetches it from contract when it not found in subgraph', async () => {
+    it("fetches it from contract when it wasn't found in subgraph", async () => {
       const sigHash = '0xd3cd7efa';
 
       const fnEntry = await fetcher.entry(
@@ -80,7 +82,7 @@ describe('Fetcher', () => {
         {
           "abi": "function upsertEntry(bytes32 _scope, bytes4 _sig, bytes _cid) payable",
           "cid": "QmQBWU4C9y9hQzw3NFiBsYPD21V1aFpDKTz6eZzgqmBS88",
-          "disputed": 2,
+          "disputed": 1,
           "notice": "Upsert an entry with \`_scope\` and \`_sig\` with medata located in \`@fromHex(_cid)\`",
           "sigHash": "0xd3cd7efa",
         }
