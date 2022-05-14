@@ -12,7 +12,6 @@ import { evaluateRaw } from './lib';
 import type { EvaluatorOptions } from './evaluator';
 import { getDefaultFetcher } from './fetcher';
 import { getSigHash } from './utils';
-import { NotFoundError } from './errors';
 
 export interface EvaluateOptions {
   userHelpers?: Record<string, any>;
@@ -52,10 +51,6 @@ async function evaluate(
     sigHash,
     provider,
   );
-
-  if (!abi || !notice) {
-    throw new NotFoundError(`No description found for method ${sigHash}`);
-  }
 
   const parameters = decodeCalldata(abi, transaction);
   const availableHelpers = { ...defaultHelpers, ...userHelpers };

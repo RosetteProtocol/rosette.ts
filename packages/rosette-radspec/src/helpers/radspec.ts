@@ -1,4 +1,4 @@
-import type { Transaction } from '@blossom-labs/rosette-core';
+import type { Address } from '@blossom-labs/rosette-core';
 
 import { decodeCalldata } from '../decoder';
 import { TypedValue } from '../evaluator';
@@ -14,19 +14,19 @@ export const radspec: RadspecHelper =
    * @param transaction The calldata of the call
    * @return {Promise<radspec/evaluator/TypedValue>}
    */
-  async (transaction: Transaction): Promise<TypedValue> => {
-    const { to, data } = transaction;
+  async (to: Address, data: string): Promise<TypedValue> => {
+    const transaction = { to, data };
     const { abi, notice } = await fetcher.entry(to, getSigHash(data), provider);
 
-    const parameters = decodeCalldata(abi, transaction);
+    const bindings = decodeCalldata(abi, transaction);
 
     return new TypedValue(
       'string',
-      await evaluateRaw(notice, parameters, {
+      await evaluateRaw(notice, bindings, {
         fetcher,
         provider,
         availableHelpers: helperManager.availableHelpers,
-        transaction,
+        transaction: transaction,
       }),
     );
   };

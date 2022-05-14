@@ -23,16 +23,22 @@ export function decodeCalldata(
     // Parse as an ethers TransactionDescription
     const { args, functionFragment } =
       ethersInterface.parseTransaction(transaction);
-    return functionFragment.inputs.reduce(
-      (parameters, input) => ({
-        [input.name]: {
-          type: input.type,
-          value: args[input.name],
-        },
+    return functionFragment.inputs.reduce((parameters, input, index) => {
+      const inputValue = {
+        type: input.type,
+        value: args[input.name ?? index],
+      };
+
+      return {
+        /**
+         * Set binding by param name and position on
+         * the signature.
+         */
+        ...(input.name ? { [input.name]: inputValue } : {}),
+        [`$${index + 1}`]: inputValue,
         ...parameters,
-      }),
-      {} as Bindings,
-    );
+      };
+    }, {} as Bindings);
   } catch (error_) {
     const error = <Error>error_;
     throw new InvalidTransactionError(error.message);

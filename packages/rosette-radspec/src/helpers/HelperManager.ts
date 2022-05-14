@@ -42,7 +42,7 @@ export default class HelperManager {
     config: HelperConfig,
   ): ReturnType<ReturnType<RadspecHelper>> {
     inputs = inputs.map((i) => (i ? i.value : '')); // pass values directly
-    console.log(inputs);
+
     return this.availableHelpers[helper](config)(...inputs);
   }
 }

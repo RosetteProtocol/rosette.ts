@@ -43,7 +43,7 @@ export interface EvaluatorOptions {
   /**
    * Available helpers
    */
-  availableHelpers: Record<string, any>;
+  availableHelpers?: Record<string, any>;
   fetcher: Fetcher;
   provider: providers.Provider;
   transaction: Transaction;
@@ -84,6 +84,10 @@ export class TypedValue {
   get value(): any {
     return this.#value;
   }
+
+  toString(): string {
+    return `{ type: ${this.#type}, value: ${this.#value}}`;
+  }
 }
 
 /**
@@ -109,13 +113,8 @@ export class Evaluator {
   readonly provider: providers.Provider;
 
   constructor(ast: AST, bindings: Bindings, options: EvaluatorOptions) {
-    const {
-      availableHelpers = {},
-      fetcher,
-      provider,
-      transaction,
-    } = options || {};
-    const { from, to, data, value = 0 } = transaction || {};
+    const { availableHelpers = {}, fetcher, provider, transaction } = options;
+    const { from, to, data, value = '0' } = transaction;
 
     this.#ast = ast;
     this.#bindings = bindings;
@@ -150,7 +149,7 @@ export class Evaluator {
     if (node.type === ExpressionStatement) {
       const typedValues = await this.#evaluateNodes(node.body);
 
-      return new TypedValue('string', this.#stringifyTypes(typedValues));
+      return new TypedValue('string', this.#stringifyTypes(typedValues, ' '));
     }
 
     if (node.type === GroupedExpression) {
@@ -430,8 +429,8 @@ export class Evaluator {
     throw new Error(`Error: ${msg}`);
   }
 
-  #stringifyTypes(nodes: (TypedValue | undefined)[]): string {
-    return nodes.map((n) => n?.value ?? '').join('');
+  #stringifyTypes(nodes: (TypedValue | undefined)[], separator = ''): string {
+    return nodes.map((n) => n?.value ?? '').join(separator);
   }
 }
 

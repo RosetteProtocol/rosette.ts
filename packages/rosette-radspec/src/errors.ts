@@ -5,11 +5,3 @@ export class InvalidTransactionError extends Error {
     super(message);
   }
 }
-
-export class NotFoundError extends Error {
-  name = 'NotFoundError';
-
-  constructor(message = "The resource couldn't be found") {
-    super(message);
-  }
-}
