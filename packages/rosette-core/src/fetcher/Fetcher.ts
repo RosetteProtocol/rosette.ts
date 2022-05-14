@@ -10,7 +10,7 @@ import rosetteStoneAbi from '../abis/RosetteStone.json';
 import { Config, DEFAULT_NETWORK } from '../configuration';
 import { getBytecodeHash } from '../utils/web3';
 import { buildEntryId } from './subgraph-connector/helpers';
-import { UnsupportedNetworkError } from '../errors';
+import { NotFoundError, UnsupportedNetworkError } from '../errors';
 
 export type FetcherOptions = {
   ipfsGateway?: string;
@@ -101,6 +101,13 @@ export class Fetcher {
         bytecodeHash,
         sigHash,
       );
+
+      // Status empty
+      if (status === 0) {
+        throw new NotFoundError(
+          `No description entry found for signature ${sigHash} with hashed bytecode ${bytecodeHash}`,
+        );
+      }
 
       fnEntry = {
         abi: '',

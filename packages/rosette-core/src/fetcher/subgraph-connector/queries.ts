@@ -1,12 +1,16 @@
-const gql = String.raw;
+export type GraphQLBody = {
+  query: string;
+  variables: Record<string, any>;
+};
 
 export const CONTRACT_FUNCTION_ENTRIES = (
   contractId: string,
   allowDisputed: boolean,
-): string => gql`
+): GraphQLBody => ({
+  query: `
   {
-    contract(id: "${contractId}") {
-      functions(where: { disputed: ${allowDisputed ? 'true' : 'false'} }) {
+    contract(id: $contractId) {
+      functions(where: { disputed: $allowDisputed }) {
         abi
         notice
         cid
@@ -15,13 +19,20 @@ export const CONTRACT_FUNCTION_ENTRIES = (
       }
     }
   }
-`;
+`,
+  variables: {
+    contractId,
+    allowDisputed,
+  },
+});
 
-export const FUNCTION_ENTRY = (entryId: string, allowDisputed: boolean) => gql`
+export const FUNCTION_ENTRY = (
+  entryId: string,
+  allowDisputed: boolean,
+): GraphQLBody => ({
+  query: `
   {
-    function(id: "${entryId}", where: { disputed: ${
-  allowDisputed ? 'true' : 'false'
-} }) {
+    function(id: $entryId, where: { disputed: $allowDisputed }) {
       abi
       notice
       cid
@@ -29,4 +40,9 @@ export const FUNCTION_ENTRY = (entryId: string, allowDisputed: boolean) => gql`
       sigHash
     }
   }
-`;
+`,
+  variables: {
+    entryId,
+    allowDisputed,
+  },
+});

@@ -2,6 +2,7 @@ import 'isomorphic-fetch';
 
 import type { FnEntry } from '../../types';
 import { parseEntries, parseFunctionEntry } from './parsers';
+import type { GraphQLBody } from './queries';
 import { CONTRACT_FUNCTION_ENTRIES, FUNCTION_ENTRY } from './queries';
 import { buildEntryId } from './helpers';
 
@@ -28,11 +29,9 @@ export class SubgraphConnector {
   }
 
   protected async querySubgraph<T>(
-    query: string,
+    body: GraphQLBody,
     parser?: (data: any) => T,
   ): Promise<Result<T>> {
-    const body: any = { query };
-
     const rawResponse = await fetch(this.#subgraphUrl, {
       body: JSON.stringify(body),
       headers: { 'Content-Type': 'application/json' },
@@ -54,7 +53,7 @@ export class SubgraphConnector {
     bytecodeHash: string,
     sigHash: string,
     { allowDisputed }: QueryOptions = DEFAULT_OPTIONS,
-  ) {
+  ): Promise<Result<FnEntry | null>> {
     const entryId = buildEntryId(bytecodeHash, sigHash);
 
     return this.querySubgraph<FnEntry | null>(
@@ -66,7 +65,7 @@ export class SubgraphConnector {
   async entries(
     bytecodeHash: string,
     { allowDisputed }: QueryOptions = DEFAULT_OPTIONS,
-  ) {
+  ): Promise<Result<FnEntry[] | null>> {
     return this.querySubgraph<FnEntry[]>(
       CONTRACT_FUNCTION_ENTRIES(bytecodeHash, allowDisputed),
       parseEntries,

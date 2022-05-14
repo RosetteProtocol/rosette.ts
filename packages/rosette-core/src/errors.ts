@@ -25,3 +25,11 @@ export class UnexpectedResultError extends Error {
     super(message);
   }
 }
+
+export class NotFoundError extends Error {
+  name = 'NotFoundError';
+
+  constructor(message = "The requested resource couldn't be found") {
+    super(message);
+  }
+}
