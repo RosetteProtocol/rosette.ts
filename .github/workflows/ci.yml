@@ -59,3 +59,5 @@ jobs:
 
       - name: Tests
         run: pnpm test:ci
+        env:
+          ARCHIVE_NODE_ENDPOINT: ${{ secrets.ARCHIVE_NODE_ENDPOINT }}

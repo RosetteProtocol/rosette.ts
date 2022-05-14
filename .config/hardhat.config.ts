@@ -5,7 +5,7 @@ const config: HardhatUserConfig = {
   networks: {
     hardhat: {
       forking: {
-        url: process.env.ARCHIVE_NODE!,
+        url: process.env.ARCHIVE_NODE_ENDPOINT!,
         blockNumber: 10672190,
       },
       loggingEnabled: false,
