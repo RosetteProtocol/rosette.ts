@@ -10,6 +10,7 @@ export type FnEntry = {
   notice: string;
   cid: string;
   disputed: string;
+  id: string;
   sigHash: string;
 };
 

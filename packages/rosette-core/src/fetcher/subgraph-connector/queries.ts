@@ -8,17 +8,18 @@ export const CONTRACT_FUNCTION_ENTRIES = (
   allowDisputed: boolean,
 ): GraphQLBody => ({
   query: `
-  {
-    contract(id: $contractId) {
-      functions(where: { disputed: $allowDisputed }) {
-        abi
-        notice
-        cid
-        disputed
-        sigHash
+    query Contract($contractId: String!, $allowDisputed: Boolean!) {
+      contract(id: $contractId) {
+        functions(where: { disputed: $allowDisputed }) {
+          abi
+          notice
+          cid
+          disputed
+          id,
+          sigHash
+        }
       }
     }
-  }
 `,
   variables: {
     contractId,
@@ -31,18 +32,42 @@ export const FUNCTION_ENTRY = (
   allowDisputed: boolean,
 ): GraphQLBody => ({
   query: `
-  {
-    function(id: $entryId, where: { disputed: $allowDisputed }) {
-      abi
-      notice
-      cid
-      disputed
-      sigHash
+    query FunctionEntry($entryId: String!, $allowDisputed: Boolean!) {
+      function(id: $entryId, where: { disputed: $allowDisputed }) {
+        abi
+        notice
+        cid
+        disputed
+        id,
+        sigHash
+      }
     }
-  }
-`,
+  `,
   variables: {
     entryId,
+    allowDisputed,
+  },
+});
+
+// query FunctionEntries($entryIds: [String!]!, $allowDisputed: Boolean!) { functions(where: { id_in: $entryIds, disputed: $allowDisputed }) { abi,notice,cid,disputed,sigHash } }
+export const FUNCTION_ENTRIES = (
+  entryIds: string[],
+  allowDisputed: boolean,
+): GraphQLBody => ({
+  query: `
+    query FunctionEntries($entryIds: [String!]!, $allowDisputed: Boolean!) {
+      functions(where: { id_in: $entryIds, disputed: $allowDisputed }) {
+        abi,
+        notice,
+        cid,
+        disputed,
+        id,
+        sigHash
+      }
+    }
+  `,
+  variables: {
+    entryIds,
     allowDisputed,
   },
 });

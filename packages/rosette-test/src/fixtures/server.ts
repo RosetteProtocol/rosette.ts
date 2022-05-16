@@ -24,53 +24,57 @@ export const DEFAULT_TEST_SERVER_CONFIG = {
 const createBaseHandlers = ({
   ipfsGateway,
 }: Required<TestServerConfig>): (GraphQLHandler | RestHandler)[] => [
-  graphql.operation((req, res, ctx) => {
-    const query = req.body?.query;
-    const variables = req.body?.variables;
+  graphql.query('Contract', (req, res, ctx) => {
+    const { contractId, allowDisputed } = req.variables;
+    const selectedContract = subgraphFixture[contractId];
 
-    const isContractQuery = query?.includes('contract(id');
-    const isFnEntryQuery = query.includes('function(id');
+    const contract = selectedContract
+      ? {
+          functions: selectedContract.data.contract.functions.filter((f) =>
+            !allowDisputed ? !f.disputed : true,
+          ),
+        }
+      : null;
 
-    if (!isContractQuery && !isFnEntryQuery) {
-      return res(
-        ctx.status(200),
-        ctx.data({
-          contract: null,
-        }),
-      );
-    }
+    return res(
+      ctx.status(200),
+      ctx.data({
+        contract,
+      }),
+    );
+  }),
+  graphql.query('FunctionEntry', (req, res, ctx) => {
+    const { entryId, allowDisputed } = req.variables;
+    const [bytecodeHash] = entryId.split('-');
+    const selectedContract = subgraphFixture[bytecodeHash];
+    const _function =
+      selectedContract?.data.contract.functions.find(
+        ({ id, disputed }) =>
+          id === entryId && (!allowDisputed ? !disputed : true),
+      ) ?? null;
 
-    let payload: Record<string, any>;
+    return res(ctx.status(200), ctx.data({ function: _function }));
+  }),
+  graphql.query('FunctionEntries', (req, res, ctx) => {
+    const { entryIds, allowDisputed } = req.variables;
+    const functions: any[] = [];
 
-    if (isContractQuery) {
-      const { contractId, allowDisputed } = variables;
-      const selectedContract = subgraphFixture[contractId];
-
-      const contractResponse = selectedContract
-        ? {
-            functions: selectedContract.data.contract.functions.filter((f) =>
-              !allowDisputed ? !f.disputed : true,
-            ),
-          }
+    entryIds.forEach((eId: string) => {
+      const [bytecodeHash] = eId.split('-');
+      const selectedContract = subgraphFixture[bytecodeHash];
+      const f = selectedContract
+        ? selectedContract.data.contract.functions.find(
+            ({ id, disputed }) =>
+              id === eId && (!allowDisputed ? !disputed : true),
+          )
         : null;
 
-      payload = {
-        contract: contractResponse,
-      };
-    } else {
-      const { entryId, allowDisputed } = variables;
-      const [bytecodeHash] = variables.entryId.split('-');
-      const selectedContract = subgraphFixture[bytecodeHash];
-      const selectedFnEntry =
-        selectedContract?.data.contract.functions.find(
-          ({ id, disputed }) =>
-            id === entryId && (!allowDisputed ? !disputed : true),
-        ) ?? null;
+      if (f) {
+        functions.push(f);
+      }
+    });
 
-      payload = { function: selectedFnEntry };
-    }
-
-    return res(ctx.status(200), ctx.data(payload));
+    return res(ctx.status(200), ctx.data({ functions }));
   }),
   rest.get(`${ipfsGateway}:cid`, (req, res, ctx) => {
     const cid = req.params.cid;

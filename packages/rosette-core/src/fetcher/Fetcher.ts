@@ -9,14 +9,20 @@ import { SubgraphConnector } from './subgraph-connector/SubgraphConnector';
 import rosetteStoneAbi from '../abis/RosetteStone.json';
 import { Config, DEFAULT_NETWORK } from '../configuration';
 import { getBytecodeHash } from '../utils/web3';
-import { buildEntryId } from './subgraph-connector/helpers';
-import { NotFoundError, UnsupportedNetworkError } from '../errors';
+import { buildEntryId, parseEntryId } from '../utils';
+import {
+  ConnectionError,
+  NotFoundError,
+  UnsupportedNetworkError,
+} from '../errors';
 
 export type FetcherOptions = {
   ipfsGateway?: string;
   rosetteNetworkId?: Network;
   rpcEndpoint?: string;
 };
+
+export type Entry = [Address, string[]];
 
 type Provider = providers.Provider;
 
@@ -42,7 +48,7 @@ export class Fetcher {
     this.#rosetteStone = new Contract(
       config.contractAddresses.rosetteStone,
       rosetteStoneAbi,
-      new providers.JsonRpcProvider(rpcEndpoint ?? config.rpcEndpoint),
+      new providers.StaticJsonRpcProvider(rpcEndpoint ?? config.rpcEndpoint),
     );
   }
 
@@ -59,7 +65,15 @@ export class Fetcher {
       return this.#entriesCache.get(entryId)!;
     }
 
-    const entry = await this.#fetchEntry(bytecodeHash, sigHash);
+    const [fnEntry] = await this.subgraphConnector.entry(
+      buildEntryId(bytecodeHash, sigHash),
+    );
+
+    const entry = await this.#processFnEntry(fnEntry, {
+      contractAddress,
+      bytecodeHash,
+      sigHash,
+    });
 
     this.#entriesCache.set(entryId, entry);
 
@@ -67,36 +81,122 @@ export class Fetcher {
   }
 
   async entries(
-    contractAddress: Address,
+    contractAddresses: Address[],
+    contractsSigHashes: string[][],
     provider: Provider,
-    // TODO: implement logic involving a selected group of sig hashes.
+    options: { ignoreNotFound: boolean } = { ignoreNotFound: false },
   ): Promise<FnEntry[]> {
-    const bytecodeHash = await getBytecodeHash(provider, contractAddress);
-    const [entries] = await this.subgraphConnector.entries(bytecodeHash);
+    const bytecodeHashes = await Promise.all(
+      contractAddresses.map((address) => getBytecodeHash(provider, address)),
+    );
+    const nonCachedContractAddresses: Address[] = [];
+    const nonCachedEntryIds: string[] = [];
+    const cachedFnEntries: FnEntry[] = [];
 
-    // Store entries
-    if (entries) {
-      entries.forEach((e) => {
-        this.#entriesCache.set(buildEntryId(bytecodeHash, e.sigHash), e);
+    contractsSigHashes.forEach((sigHashes, i) => {
+      sigHashes.forEach((sigHash) => {
+        const entryId = buildEntryId(bytecodeHashes[i], sigHash);
+        const fnEntry = this.#entriesCache.get(entryId);
+
+        if (fnEntry) {
+          cachedFnEntries.push(fnEntry);
+        } else {
+          nonCachedContractAddresses.push(contractAddresses[i]);
+          nonCachedEntryIds.push(entryId);
+        }
       });
+    });
+
+    if (!nonCachedEntryIds.length) {
+      return cachedFnEntries;
     }
 
-    return entries ?? [];
+    const [subgraphEntries] = await this.subgraphConnector.entries(
+      nonCachedEntryIds,
+    );
+
+    let processedFnEntries: FnEntry[] = [];
+
+    const processedFnEntriesPromises = nonCachedEntryIds.map(
+      (nonCacheId, i) => {
+        const [bytecodeHash, sigHash] = parseEntryId(nonCacheId);
+        return this.#processFnEntry(
+          subgraphEntries?.find((e) => e.id === nonCacheId),
+          {
+            contractAddress: nonCachedContractAddresses[i],
+            bytecodeHash,
+            sigHash,
+          },
+        );
+      },
+    );
+
+    if (options.ignoreNotFound) {
+      const settledPromises = await Promise.allSettled(
+        processedFnEntriesPromises,
+      );
+
+      processedFnEntries = settledPromises
+        .filter((p) => p.status === 'fulfilled')
+        .map((p) => (p as PromiseFulfilledResult<FnEntry>).value);
+    } else {
+      processedFnEntries = await Promise.all(processedFnEntriesPromises);
+    }
+
+    // Store fetched entries in cache
+    processedFnEntries.forEach((e) => {
+      this.#entriesCache.set(e.id, e);
+    });
+
+    return [...cachedFnEntries, ...processedFnEntries];
   }
 
-  async #fetchEntry(bytecodeHash: string, sigHash: string): Promise<FnEntry> {
-    // Try fetching from subgraph.
-    const result = await this.subgraphConnector.entry(bytecodeHash, sigHash);
+  async contractEntries(
+    contractAddress: Address,
+    provider: Provider,
+  ): Promise<FnEntry[]> {
+    const bytecodeHash = await getBytecodeHash(provider, contractAddress);
 
-    const subgraphFailed = result[1];
-    let fnEntry = result[0];
+    const [fnEntries, subgraphError] =
+      await this.subgraphConnector.contractEntries(bytecodeHash);
 
-    if (!subgraphFailed && fnEntry && isEntryValid(fnEntry)) {
-      return fnEntry;
+    if (subgraphError) {
+      throw new ConnectionError(
+        `An error happened when fetching contract ${contractAddress} entries: ${subgraphError.message}`,
+      );
     }
 
-    // Try fetching from contract.
-    if (subgraphFailed || !fnEntry) {
+    const processedFnEntries = fnEntries
+      ? await Promise.all(fnEntries.map((e) => this.#processFnEntry(e)))
+      : [];
+
+    processedFnEntries.forEach((e) => this.#entriesCache.set(e.id, e));
+
+    return processedFnEntries;
+  }
+
+  async #processFnEntry(
+    fnEntry: FnEntry | null | undefined,
+    fallbackData?: {
+      contractAddress: string;
+      bytecodeHash: string;
+      sigHash: string;
+    },
+  ): Promise<FnEntry> {
+    let _fnEntry: FnEntry | null = fnEntry ? { ...fnEntry } : null;
+
+    if (_fnEntry && isEntryValid(_fnEntry)) {
+      return _fnEntry;
+    }
+
+    // Fallback to contract.
+    if (!_fnEntry) {
+      if (!fallbackData) {
+        throw new Error('No fallback data provided');
+      }
+
+      const { contractAddress, bytecodeHash, sigHash } = fallbackData || {};
+
       const [bytesCID, , , status] = await this.#rosetteStone.getEntry(
         bytecodeHash,
         sigHash,
@@ -105,25 +205,30 @@ export class Fetcher {
       // Status empty
       if (status === 0) {
         throw new NotFoundError(
-          `No description entry found for signature ${sigHash} with hashed bytecode ${bytecodeHash}`,
+          `No description entry found for signature ${sigHash} of ${
+            contractAddress
+              ? `contract ${contractAddress}`
+              : `hashed bytecode ${bytecodeHash}`
+          }`,
         );
       }
 
-      fnEntry = {
+      _fnEntry = {
         abi: '',
         disputed: status,
         notice: '',
         cid: toUtf8String(bytesCID),
+        id: buildEntryId(bytecodeHash, sigHash),
         sigHash,
       };
     }
 
     // Fallback to fetch entry data from IPFS.
-    const data = await this.#ipfsResolver.json(fnEntry.cid);
+    const data = await this.#ipfsResolver.json(_fnEntry.cid);
 
-    fnEntry.abi = data.abi;
-    fnEntry.notice = data.notice;
+    _fnEntry.abi = data.abi;
+    _fnEntry.notice = data.notice;
 
-    return fnEntry;
+    return _fnEntry;
   }
 }

@@ -7,6 +7,7 @@ import {
 import { SubgraphConnector } from '../fetcher/subgraph-connector/SubgraphConnector';
 import { Config } from '../configuration';
 import type { Network } from '../types';
+import { buildEntryId } from '../utils';
 
 describe('Subgraph Connector', () => {
   let subgraphConnector: SubgraphConnector;
@@ -23,119 +24,156 @@ describe('Subgraph Connector', () => {
 
   describe("when fetching a contract's function entries", () => {
     it('should return entries correctly', async () => {
-      const fnEntries = await subgraphConnector.entries(bytecodeHash);
-
-      expect(fnEntries).toMatchInlineSnapshot(`
-        [
-          [
-            {
-              "abi": "function sign(uint256 _guidelineVersion)",
-              "cid": "QmPeWHhDFEiDStyADgd392kmDV4E5hgWVgyG3KL4i8tkbc",
-              "disputed": false,
-              "notice": "Sign guideline \`_guidelineVersion\`",
-              "sigHash": "0x2fb1b25f",
-            },
-            {
-              "abi": null,
-              "cid": "QmNUy3tgcBwFhWrbuvaXGSgx5jrtFAqr5kU5ksKtxHRpjU",
-              "disputed": false,
-              "notice": null,
-              "sigHash": "0x3d5d7555",
-            },
-          ],
-          false,
-        ]
-      `);
+      await expect(subgraphConnector.contractEntries(bytecodeHash)).resolves
+        .toMatchInlineSnapshot(`
+              [
+                [
+                  {
+                    "abi": "function sign(uint256 _guidelineVersion)",
+                    "cid": "QmPeWHhDFEiDStyADgd392kmDV4E5hgWVgyG3KL4i8tkbc",
+                    "disputed": false,
+                    "id": "0xffdac63ea5cd5767b79bec5e972a17bae6dde90e0e60ff1a07546c1f073cfe94-0x2fb1b25f",
+                    "notice": "Sign guideline \`_guidelineVersion\`",
+                    "sigHash": "0x2fb1b25f",
+                  },
+                  {
+                    "abi": "function changeGuideline(uint64 _cooldownPeriod,uint64 _gracePeriod, uint256 _collateralAmount,bytes calldata _metadata) external",
+                    "cid": "QmUxSKkHGeivK2bCRuLQ9ukNkr1KY5RJZzSzFLsrG8w1WS",
+                    "disputed": false,
+                    "id": "0xffdac63ea5cd5767b79bec5e972a17bae6dde90e0e60ff1a07546c1f073cfe94-0xc1c5761b",
+                    "notice": "Update to a guideline with a \`@transformTime(_cooldownPeriod)\`/\`@transformTime(_gracePeriod)\` cooldown/grace period and a collateral amount of \`@tokenAmount(0x0000000000000000000000000000000000000000, _collateralAmount)\`. The metadata is located on \`@fromHex(_metadata)\`",
+                    "sigHash": "0xc1c5761b",
+                  },
+                ],
+              ]
+            `);
     });
 
     it('should return disputed entries if allowed', async () => {
-      const fnEntries = await subgraphConnector.entries(bytecodeHash, {
-        allowDisputed: true,
-      });
+      await expect(
+        subgraphConnector.contractEntries(bytecodeHash, {
+          allowDisputed: true,
+        }),
+      ).resolves.toMatchInlineSnapshot(`
+              [
+                [
+                  {
+                    "abi": "function sign(uint256 _guidelineVersion)",
+                    "cid": "QmPeWHhDFEiDStyADgd392kmDV4E5hgWVgyG3KL4i8tkbc",
+                    "disputed": false,
+                    "id": "0xffdac63ea5cd5767b79bec5e972a17bae6dde90e0e60ff1a07546c1f073cfe94-0x2fb1b25f",
+                    "notice": "Sign guideline \`_guidelineVersion\`",
+                    "sigHash": "0x2fb1b25f",
+                  },
+                  {
+                    "abi": null,
+                    "cid": "QmNUy3tgcBwFhWrbuvaXGSgx5jrtFAqr5kU5ksKtxHRpjU",
+                    "disputed": true,
+                    "id": "0xffdac63ea5cd5767b79bec5e972a17bae6dde90e0e60ff1a07546c1f073cfe94-0x3d5d7555",
+                    "notice": null,
+                    "sigHash": "0x3d5d7555",
+                  },
+                  {
+                    "abi": "function changeGuideline(uint64 _cooldownPeriod,uint64 _gracePeriod, uint256 _collateralAmount,bytes calldata _metadata) external",
+                    "cid": "QmUxSKkHGeivK2bCRuLQ9ukNkr1KY5RJZzSzFLsrG8w1WS",
+                    "disputed": false,
+                    "id": "0xffdac63ea5cd5767b79bec5e972a17bae6dde90e0e60ff1a07546c1f073cfe94-0xc1c5761b",
+                    "notice": "Update to a guideline with a \`@transformTime(_cooldownPeriod)\`/\`@transformTime(_gracePeriod)\` cooldown/grace period and a collateral amount of \`@tokenAmount(0x0000000000000000000000000000000000000000, _collateralAmount)\`. The metadata is located on \`@fromHex(_metadata)\`",
+                    "sigHash": "0xc1c5761b",
+                  },
+                ],
+              ]
+            `);
+    });
+  });
 
-      expect(fnEntries).toMatchInlineSnapshot(`
-        [
-          [
-            {
-              "abi": "function sign(uint256 _guidelineVersion)",
-              "cid": "QmPeWHhDFEiDStyADgd392kmDV4E5hgWVgyG3KL4i8tkbc",
-              "disputed": false,
-              "notice": "Sign guideline \`_guidelineVersion\`",
-              "sigHash": "0x2fb1b25f",
-            },
-            {
-              "abi": null,
-              "cid": "QmNUy3tgcBwFhWrbuvaXGSgx5jrtFAqr5kU5ksKtxHRpjU",
-              "disputed": false,
-              "notice": null,
-              "sigHash": "0x3d5d7555",
-            },
-            {
-              "abi": null,
-              "cid": "QmUxSKkHGeivK2bCRuLQ9ukNkr1KY5RJZzSzFLsrG8w1WS",
-              "disputed": true,
-              "notice": null,
-              "sigHash": "0xc1c5761b",
-            },
-          ],
-          false,
-        ]
-      `);
+  describe('when fetching a group of function entries', () => {
+    it('should return them correctly', async () => {
+      const bytecodeHashTwo =
+        '0x495fd09dbcd9627df345ba606ffe44d137f3e515e7402159a224458611caf2ec';
+      const sigHashOne =
+        subgraphFixture[bytecodeHash].data.contract.functions[0].sigHash;
+      const sigHashTwo =
+        subgraphFixture[bytecodeHashTwo].data.contract.functions[0].sigHash;
+      const sigHashes = [
+        buildEntryId(bytecodeHash, sigHashOne),
+        buildEntryId(bytecodeHashTwo, sigHashTwo),
+      ];
+
+      await expect(subgraphConnector.entries(sigHashes)).resolves
+        .toMatchInlineSnapshot(`
+              [
+                [
+                  {
+                    "abi": "function sign(uint256 _guidelineVersion)",
+                    "cid": "QmPeWHhDFEiDStyADgd392kmDV4E5hgWVgyG3KL4i8tkbc",
+                    "disputed": false,
+                    "id": "0xffdac63ea5cd5767b79bec5e972a17bae6dde90e0e60ff1a07546c1f073cfe94-0x2fb1b25f",
+                    "notice": "Sign guideline \`_guidelineVersion\`",
+                    "sigHash": "0x2fb1b25f",
+                  },
+                  {
+                    "abi": "function payday()",
+                    "cid": "QmNUy3tgcBwFhWrbuvaXGSgx5jrtFAqr5kU5ksKtxHRpjU",
+                    "disputed": false,
+                    "id": "0x495fd09dbcd9627df345ba606ffe44d137f3e515e7402159a224458611caf2ec-0x6881385b",
+                    "notice": "Get owed Payroll allowance",
+                    "sigHash": "0x6881385b",
+                  },
+                ],
+              ]
+            `);
     });
   });
 
   describe('when fetching a function entry', () => {
-    const sigHash =
-      subgraphFixture[bytecodeHash].data.contract.functions[0].sigHash;
-    const disputedEntrySigHash =
-      subgraphFixture[bytecodeHash].data.contract.functions[2].sigHash;
+    const sigHash = '0x2fb1b25f';
+    const disputedEntrySigHash = '0x3d5d7555';
 
     it('should return a correct function entry', async () => {
-      const fnEntry = await subgraphConnector.entry(bytecodeHash, sigHash);
-
-      expect(fnEntry).toMatchInlineSnapshot(`
-        [
-          {
-            "abi": "function sign(uint256 _guidelineVersion)",
-            "cid": "QmPeWHhDFEiDStyADgd392kmDV4E5hgWVgyG3KL4i8tkbc",
-            "disputed": false,
-            "notice": "Sign guideline \`_guidelineVersion\`",
-            "sigHash": "0x2fb1b25f",
-          },
-          false,
-        ]
-      `);
+      await expect(subgraphConnector.entry(buildEntryId(bytecodeHash, sigHash)))
+        .resolves.toMatchInlineSnapshot(`
+              [
+                {
+                  "abi": "function sign(uint256 _guidelineVersion)",
+                  "cid": "QmPeWHhDFEiDStyADgd392kmDV4E5hgWVgyG3KL4i8tkbc",
+                  "disputed": false,
+                  "id": "0xffdac63ea5cd5767b79bec5e972a17bae6dde90e0e60ff1a07546c1f073cfe94-0x2fb1b25f",
+                  "notice": "Sign guideline \`_guidelineVersion\`",
+                  "sigHash": "0x2fb1b25f",
+                },
+              ]
+            `);
     });
 
     it('should return nothing if the function entry is disputed', async () => {
       const [data] = await subgraphConnector.entry(
-        bytecodeHash,
-        disputedEntrySigHash,
+        buildEntryId(bytecodeHash, disputedEntrySigHash),
       );
 
       expect(data).toBeNull();
     });
-    it('should return a disputed function entry if allowed', async () => {
-      const fnEntry = await subgraphConnector.entry(
-        bytecodeHash,
-        disputedEntrySigHash,
-        {
-          allowDisputed: true,
-        },
-      );
 
-      expect(fnEntry).toMatchInlineSnapshot(`
-        [
+    it('should return a disputed function entry if allowed', async () => {
+      await expect(
+        subgraphConnector.entry(
+          buildEntryId(bytecodeHash, disputedEntrySigHash),
           {
-            "abi": null,
-            "cid": "QmUxSKkHGeivK2bCRuLQ9ukNkr1KY5RJZzSzFLsrG8w1WS",
-            "disputed": true,
-            "notice": null,
-            "sigHash": "0xc1c5761b",
+            allowDisputed: true,
           },
-          false,
-        ]
-      `);
+        ),
+      ).resolves.toMatchInlineSnapshot(`
+              [
+                {
+                  "abi": null,
+                  "cid": "QmNUy3tgcBwFhWrbuvaXGSgx5jrtFAqr5kU5ksKtxHRpjU",
+                  "disputed": true,
+                  "id": "0xffdac63ea5cd5767b79bec5e972a17bae6dde90e0e60ff1a07546c1f073cfe94-0x3d5d7555",
+                  "notice": null,
+                  "sigHash": "0x3d5d7555",
+                },
+              ]
+            `);
     });
   });
 });

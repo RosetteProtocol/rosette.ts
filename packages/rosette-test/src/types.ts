@@ -7,11 +7,11 @@ type SubgraphEntry = {
   data: {
     contract: {
       functions: {
-        id: string;
         abi: string | null;
         cid: string;
         disputed: boolean;
         notice: string | null;
+        id?: string;
         sigHash: string;
       }[];
     };
@@ -20,7 +20,6 @@ type SubgraphEntry = {
 
 export type ContractFixture = {
   address: string;
-  bytecode: string;
 };
 
 export type IPFSFixture = Record<string, IPFSEntry>;

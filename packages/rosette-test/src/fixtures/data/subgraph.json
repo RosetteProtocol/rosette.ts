@@ -15,16 +15,16 @@
             "id": "0xffdac63ea5cd5767b79bec5e972a17bae6dde90e0e60ff1a07546c1f073cfe94-0x3d5d7555",
             "abi": null,
             "cid": "QmNUy3tgcBwFhWrbuvaXGSgx5jrtFAqr5kU5ksKtxHRpjU",
-            "disputed": false,
+            "disputed": true,
             "notice": null,
             "sigHash": "0x3d5d7555"
           },
           {
             "id": "0xffdac63ea5cd5767b79bec5e972a17bae6dde90e0e60ff1a07546c1f073cfe94-0xc1c5761b",
-            "abi": null,
+            "abi": "function changeGuideline(uint64 _cooldownPeriod,uint64 _gracePeriod, uint256 _collateralAmount,bytes calldata _metadata) external",
             "cid": "QmUxSKkHGeivK2bCRuLQ9ukNkr1KY5RJZzSzFLsrG8w1WS",
-            "disputed": true,
-            "notice": null,
+            "disputed": false,
+            "notice": "Update to a guideline with a `@transformTime(_cooldownPeriod)`/`@transformTime(_gracePeriod)` cooldown/grace period and a collateral amount of `@tokenAmount(0x0000000000000000000000000000000000000000, _collateralAmount)`. The metadata is located on `@fromHex(_metadata)`",
             "sigHash": "0xc1c5761b"
           }
         ]
@@ -41,7 +41,7 @@
             "cid": "QmNUy3tgcBwFhWrbuvaXGSgx5jrtFAqr5kU5ksKtxHRpjU",
             "disputed": false,
             "notice": "Get owed Payroll allowance",
-            "sigHash": "0x3d5d7555"
+            "sigHash": "0x6881385b"
           },
           {
             "id": "0x495fd09dbcd9627df345ba606ffe44d137f3e515e7402159a224458611caf2ec-0xcae9ca51",

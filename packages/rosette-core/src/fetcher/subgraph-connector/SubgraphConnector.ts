@@ -1,10 +1,18 @@
 import 'isomorphic-fetch';
 
 import type { FnEntry } from '../../types';
-import { parseEntries, parseFunctionEntry } from './parsers';
+import {
+  parseContract,
+  parseFunctionEntries,
+  parseFunctionEntry,
+} from './parsers';
 import type { GraphQLBody } from './queries';
-import { CONTRACT_FUNCTION_ENTRIES, FUNCTION_ENTRY } from './queries';
-import { buildEntryId } from './helpers';
+import {
+  CONTRACT_FUNCTION_ENTRIES,
+  FUNCTION_ENTRIES,
+  FUNCTION_ENTRY,
+} from './queries';
+import { ConnectionError } from '../../errors';
 
 type QueryOptions = {
   allowDisputed: boolean;
@@ -15,7 +23,7 @@ type QueryResult = {
   errors?: { message: string }[];
 };
 
-type Result<T> = [T | null, boolean];
+type Result<T> = [T | null, Error?];
 
 const DEFAULT_OPTIONS: QueryOptions = {
   allowDisputed: false,
@@ -41,34 +49,43 @@ export class SubgraphConnector {
     const { data, errors } = (await rawResponse.json()) as QueryResult;
 
     if (errors?.length) {
-      console.error(errors[0]);
+      const err = new ConnectionError(
+        `An error happened while querying subgraph: ${errors[0]}`,
+      );
 
-      return [null, true];
+      return [null, err];
     }
 
-    return [parser ? parser(data) : data, false];
+    return [parser ? parser(data) : data];
   }
 
   entry(
-    bytecodeHash: string,
-    sigHash: string,
+    entryId: string,
     { allowDisputed }: QueryOptions = DEFAULT_OPTIONS,
   ): Promise<Result<FnEntry | null>> {
-    const entryId = buildEntryId(bytecodeHash, sigHash);
-
     return this.querySubgraph<FnEntry | null>(
       FUNCTION_ENTRY(entryId, allowDisputed),
       parseFunctionEntry,
     );
   }
 
-  async entries(
+  entries(
+    entryIds: string[],
+    { allowDisputed }: QueryOptions = DEFAULT_OPTIONS,
+  ): Promise<Result<FnEntry[]>> {
+    return this.querySubgraph<FnEntry[]>(
+      FUNCTION_ENTRIES(entryIds, allowDisputed),
+      parseFunctionEntries,
+    );
+  }
+
+  async contractEntries(
     bytecodeHash: string,
     { allowDisputed }: QueryOptions = DEFAULT_OPTIONS,
-  ): Promise<Result<FnEntry[] | null>> {
+  ): Promise<Result<FnEntry[]>> {
     return this.querySubgraph<FnEntry[]>(
       CONTRACT_FUNCTION_ENTRIES(bytecodeHash, allowDisputed),
-      parseEntries,
+      parseContract,
     );
   }
 }
