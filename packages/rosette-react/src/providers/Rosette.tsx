@@ -37,9 +37,7 @@ export const RosetteProvider = ({
 };
 
 export const useRosette = () => {
-  const rosetteContext = useContext(
-    RosetteContext,
-  ) as unknown as RosetteContext;
+  const rosetteContext = useContext(RosetteContext);
 
   if (!rosetteContext) {
     throw new Error('useRosette must be used within RosetteProvider');

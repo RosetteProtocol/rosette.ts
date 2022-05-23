@@ -1,6 +1,6 @@
 import { DEFAULT_TEST_SERVER_CONFIG } from '@blossom-labs/rosette-test';
 import type { RenderHookOptions } from '@testing-library/react';
-import { renderHook, waitFor } from '@testing-library/react';
+import { waitFor as defaultWaitFor, renderHook } from '@testing-library/react';
 import { providers } from 'ethers';
 
 import type { RosetteProviderProps } from '../providers/Rosette';
@@ -40,10 +40,11 @@ export const renderRosetteHook = <TProps, TResult>(
     ...options_,
   };
 
-  const utils = renderHook<TResult, TProps>(hook, options);
+  const result = renderHook<TResult, TProps>(hook, options);
 
   return {
-    ...utils,
-    waitFor: (utils as { waitFor?: typeof waitFor }).waitFor ?? waitFor,
+    ...result,
+    waitFor:
+      (result as { waitFor?: typeof defaultWaitFor }).waitFor ?? defaultWaitFor,
   };
 };
