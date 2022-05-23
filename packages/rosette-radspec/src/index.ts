@@ -4,7 +4,6 @@
 import type { Fetcher, Transaction } from '@blossom-labs/rosette-core';
 
 import type { providers } from 'ethers';
-import { ethers } from 'ethers';
 
 import { decodeCalldata } from './decoder';
 import { defaultHelpers } from './helpers';
@@ -33,10 +32,10 @@ export interface EvaluateOptions {
   * radspec.evaluate(call, provider)
   *   .then(console.log) // => "Will multiply 122 by 7 and return 854."
   * @param transaction The transaction to decode for this evaluation
-  * @param fetcher A rosette's protocol fetcher.
   * @param provider EIP 1193 provider
-  * @param {?Object} options An options object
-  * @param {?Object} options.userHelpers User defined helpers
+  * @param options An options object
+  * @param options.userHelpers User defined helpers
+  * @param options.fetcher A rosette's protocol fetcher.
   * @return {Promise<string>} The result of the evaluation
   */
 async function evaluate(
@@ -59,7 +58,7 @@ async function evaluate(
     availableHelpers,
     fetcher,
     transaction,
-    provider: provider ?? ethers.getDefaultProvider(),
+    provider,
   };
   // Evaluate expression with bindings from the transaction data
   return evaluateRaw(notice, parameters, evaluatorOptions);

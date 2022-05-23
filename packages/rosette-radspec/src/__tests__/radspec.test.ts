@@ -9,8 +9,6 @@ import { ethers } from 'ethers';
 
 import { evaluate } from '../';
 
-// const XDAI_ENDPOINT = 'https://rpc.xdaichain.com';
-
 const { ipfsGateway, network, rpcEndpoint } = DEFAULT_TEST_SERVER_CONFIG;
 
 describe('Radspec', () => {
@@ -53,30 +51,3 @@ describe('Radspec', () => {
     });
   });
 });
-
-// TODO: include userFunctions test
-// test("radspec#evaluate Helper userFunctions", async (t) => {
-//   const expression = null;
-//   const call = {
-//     abi: [
-//       "function stakeToProposal(uint256 _proposalId, uint256 _amount) external",
-//     ],
-//     transaction: {
-//       to: "0x0b21081c6f8b1990f53fc76279cc41ba22d7afe2",
-//       data: "0xfc3700510000000000000000000000000000000000000000000000000000000000000042000000000000000000000000000000000000000000000002a48286b8d60482b9",
-//     },
-//   };
-
-//   const options = {
-//     provider: new ethers.providers.StaticJsonRpcProvider(XDAI_ENDPOINT),
-//     userFunctions: {
-//       "stakeToProposal(uint256,uint256)":
-//         "Stake `@tokenAmount((self.stakeToken(): address), _amount)` on proposal #`_proposalId`",
-//     },
-//   };
-
-//   t.is(
-//     await evaluate(expression, call, options),
-//     "Stake 48.747673445034394297 on proposal #66"
-//   );
-// });

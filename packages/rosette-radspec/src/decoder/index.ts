@@ -8,7 +8,7 @@ import type { Bindings } from '../types';
 /**
  * Decode parameters from a calldata of a transaction.
  *
- * @param abi The radspec expression
+ * @param abi The function signature ABI
  * @param transaction The transaction to decode for this evaluation
  * @return An object with the parameters
  */
