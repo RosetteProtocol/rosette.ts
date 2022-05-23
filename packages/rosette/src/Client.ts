@@ -12,7 +12,7 @@ export type ClientOptions = {
 export class Client {
   readonly fetcher: Fetcher;
 
-  constructor({ fetcherOptions }: ClientOptions) {
+  constructor({ fetcherOptions }: ClientOptions = { fetcherOptions: {} }) {
     this.fetcher = new Fetcher(fetcherOptions);
   }
 
