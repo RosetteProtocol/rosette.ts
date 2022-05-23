@@ -16,7 +16,7 @@ jobs:
     strategy:
       matrix:
         node-version: [16.x]
-        pnpm-version: [6.x]
+        pnpm-version: [7.x]
     steps:
       - uses: actions/checkout@v3
       - uses: pnpm/action-setup@v2.2.1
@@ -58,4 +58,6 @@ jobs:
         run: pnpm build
 
       - name: Tests
-        run: pnpm test:coverage
+        run: pnpm test:ci
+        env:
+          ARCHIVE_NODE_ENDPOINT: ${{ secrets.ARCHIVE_NODE_ENDPOINT }}

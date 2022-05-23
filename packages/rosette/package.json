@@ -1,0 +1,32 @@
+{
+  "name": "@blossom-labs/rosette",
+  "version": "0.0.1",
+  "description": "Main library for interacting with the Rosette protocol",
+  "main": "dist/blossom-labs-rosette.cjs.js",
+  "module": "dist/blossom-labs-rosette.esm.js",
+  "scripts": {
+    "preinstall": "npx only-allow pnpm",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BlossomLabs/rosette.ts.git"
+  },
+  "author": "Blossom Labs",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/BlossomLabs/rosette.ts/issues"
+  },
+  "homepage": "https://github.com/BlossomLabs/rosette.ts#readme",
+  "devDependencies": {
+    "@blossom-labs/rosette-test": "workspace:^0.0.1",
+    "ethers": "^5.6.4"
+  },
+  "peerDependencies": {
+    "ethers": "^5.6.4"
+  },
+  "dependencies": {
+    "@blossom-labs/rosette-core": "workspace:^0.0.1",
+    "@blossom-labs/rosette-radspec": "workspace:^0.0.1"
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "name": "@blossom-labs/rosette-radspec",
+  "version": "0.0.1",
+  "description": "Radspec is a safe alternative to Ethereum's natspec",
+  "main": "dist/blossom-labs-rosette-radspec.cjs.js",
+  "module": "dist/blossom-labs-rosette-radspec.esm.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "preinstall": "npx only-allow pnpm"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BlossomLabs/rosette.ts.git"
+  },
+  "keywords": [
+    "language",
+    "compiler",
+    "ethereum"
+  ],
+  "author": "Blossom Labs",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/BlossomLabs/rosette.ts/issues"
+  },
+  "homepage": "https://github.com/BlossomLabs/rosette.ts#readme",
+  "devDependencies": {
+    "@blossom-labs/rosette-core": "workspace:^0.0.1",
+    "@blossom-labs/rosette-test": "workspace:^0.0.1"
+  },
+  "dependencies": {
+    "date-fns": "^2.26.0"
+  },
+  "peerDependencies": {
+    "@blossom-labs/rosette-core": "workspace:^0.0.1",
+    "ethers": "^5.6.4"
+  }
+}

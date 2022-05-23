@@ -1,0 +1,3 @@
+[
+  "function getEntry(bytes32 _scope, bytes4 _sig) view returns (bytes, address, uint256, uint8)"
+]

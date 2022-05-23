@@ -24,6 +24,12 @@
   "rules": {
     // `eslint-plugin-import`
     // https://github.com/benmosher/eslint-plugin-import
+    "@typescript-eslint/explicit-function-return-type": [
+      "error",
+      {
+        "allowExpressions": true
+      }
+    ],
     "import/order": [
       "error",
       {

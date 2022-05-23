@@ -1,0 +1,19 @@
+{
+  "name": "@blossom-labs/rosette-test",
+  "version": "0.0.1",
+  "private": true,
+  "main": "dist/blossom-labs-rosette-test.cjs.js",
+  "module": "dist/blossom-labs-rosette-test.esm.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Blossom Labs",
+  "license": "MIT",
+  "devDependencies": {
+    "msw": "^0.39.2"
+  },
+  "peerDependencies": {
+    "ethers": "^5.6.4",
+    "msw": "^0.39.2"
+  }
+}
