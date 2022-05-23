@@ -5,6 +5,7 @@ import {
 import { providers } from 'ethers';
 
 import { Fetcher } from '../fetcher/Fetcher';
+import type { Address } from '../types';
 
 const { network, ipfsGateway, rpcEndpoint } = DEFAULT_TEST_SERVER_CONFIG;
 
@@ -85,6 +86,7 @@ describe('Fetcher', () => {
   });
 
   describe('when fetching a group of entries', () => {
+    let contractToSigHashes: [Address, string[]][];
     const contractAddresses = [
       '0x0D5263B7969144a852D58505602f630f9b20239D',
       '0x7e18C76Aa26BD6bD04196e34C93a925498A5d0F1',
@@ -95,8 +97,12 @@ describe('Fetcher', () => {
     ];
 
     it('fetches them correctly', async () => {
-      await expect(fetcher.entries(contractAddresses, sigHashes, provider))
-        .resolves.toMatchInlineSnapshot(`
+      contractToSigHashes = [
+        [contractAddresses[0], sigHashes[0]],
+        [contractAddresses[1], sigHashes[1]],
+      ];
+      await expect(fetcher.entries(contractToSigHashes, provider)).resolves
+        .toMatchInlineSnapshot(`
               [
                 {
                   "abi": "function payday()",
@@ -135,25 +141,26 @@ describe('Fetcher', () => {
     });
 
     it("fails when one of the entries doesn't exists", async () => {
+      contractToSigHashes = [
+        [contractAddresses[0], sigHashes[0]],
+        [contractAddresses[1], ['0x48fd7efb']],
+      ];
       await expect(
-        fetcher.entries(
-          contractAddresses,
-          [sigHashes[0], ['0x48fd7efb']],
-          provider,
-        ),
+        fetcher.entries(contractToSigHashes, provider),
       ).rejects.toMatchInlineSnapshot(
         `[NotFoundError: No description entry found for signature 0x48fd7efb of contract 0x7e18C76Aa26BD6bD04196e34C93a925498A5d0F1]`,
       );
     });
 
     it('returns all the entries found when ignoreNotFound is set', async () => {
+      contractToSigHashes = [
+        [contractAddresses[0], sigHashes[0]],
+        [contractAddresses[1], ['0x48fd7efb']],
+      ];
       await expect(
-        fetcher.entries(
-          contractAddresses,
-          [sigHashes[0], ['0x48fd7efb']],
-          provider,
-          { ignoreNotFound: true },
-        ),
+        fetcher.entries(contractToSigHashes, provider, {
+          ignoreNotFound: true,
+        }),
       ).resolves.toMatchInlineSnapshot(`
               [
                 {

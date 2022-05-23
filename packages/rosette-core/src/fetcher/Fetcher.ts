@@ -81,19 +81,27 @@ export class Fetcher {
   }
 
   async entries(
-    contractAddresses: Address[],
-    contractsSigHashes: string[][],
+    contractsToSigHashes: [Address, string[]][],
     provider: Provider,
     options: { ignoreNotFound: boolean } = { ignoreNotFound: false },
   ): Promise<FnEntry[]> {
     const bytecodeHashes = await Promise.all(
-      contractAddresses.map((address) => getBytecodeHash(provider, address)),
+      contractsToSigHashes.map(([address]) =>
+        getBytecodeHash(provider, address),
+      ),
     );
-    const nonCachedContractAddresses: Address[] = [];
+    const bytecodeHashToContract = bytecodeHashes.reduce(
+      (mapping, bytecodeHash, i) => ({
+        ...mapping,
+        [bytecodeHash]: contractsToSigHashes[i][0],
+      }),
+      {},
+    );
+
     const nonCachedEntryIds: string[] = [];
     const cachedFnEntries: FnEntry[] = [];
 
-    contractsSigHashes.forEach((sigHashes, i) => {
+    contractsToSigHashes.forEach(([, sigHashes], i) => {
       sigHashes.forEach((sigHash) => {
         const entryId = buildEntryId(bytecodeHashes[i], sigHash);
         const fnEntry = this.#entriesCache.get(entryId);
@@ -101,7 +109,6 @@ export class Fetcher {
         if (fnEntry) {
           cachedFnEntries.push(fnEntry);
         } else {
-          nonCachedContractAddresses.push(contractAddresses[i]);
           nonCachedEntryIds.push(entryId);
         }
       });
@@ -117,19 +124,20 @@ export class Fetcher {
 
     let processedFnEntries: FnEntry[] = [];
 
-    const processedFnEntriesPromises = nonCachedEntryIds.map(
-      (nonCacheId, i) => {
-        const [bytecodeHash, sigHash] = parseEntryId(nonCacheId);
-        return this.#processFnEntry(
-          subgraphEntries?.find((e) => e.id === nonCacheId),
-          {
-            contractAddress: nonCachedContractAddresses[i],
-            bytecodeHash,
-            sigHash,
-          },
-        );
-      },
-    );
+    const processedFnEntriesPromises = nonCachedEntryIds.map((nonCacheId) => {
+      const [bytecodeHash, sigHash] = parseEntryId(nonCacheId);
+      return this.#processFnEntry(
+        subgraphEntries?.find((e) => e.id === nonCacheId),
+        {
+          contractAddress:
+            bytecodeHashToContract[
+              bytecodeHash as keyof typeof bytecodeHashToContract
+            ],
+          bytecodeHash,
+          sigHash,
+        },
+      );
+    });
 
     if (options.ignoreNotFound) {
       const settledPromises = await Promise.allSettled(
