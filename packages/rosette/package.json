@@ -27,6 +27,6 @@
   },
   "dependencies": {
     "@blossom-labs/rosette-core": "workspace:^0.1.0",
-    "@blossom-labs/rosette-radspec": "workspace:^1.0.0"
+    "@blossom-labs/rosette-radspec": "workspace:^0.1.0"
   }
 }

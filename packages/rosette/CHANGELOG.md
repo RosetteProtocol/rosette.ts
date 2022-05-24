@@ -17,4 +17,4 @@
 - Updated dependencies [e62e0ad]
 - Updated dependencies [bb80687]
   - @blossom-labs/rosette-core@0.1.0
-  - @blossom-labs/rosette-radspec@1.0.0
+  - @blossom-labs/rosette-radspec@0.1.0
