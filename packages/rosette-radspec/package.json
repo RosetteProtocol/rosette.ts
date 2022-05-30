@@ -7,9 +7,6 @@
   "files": [
     "dist"
   ],
-  "scripts": {
-    "preinstall": "npx only-allow pnpm"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/BlossomLabs/rosette.ts.git"
