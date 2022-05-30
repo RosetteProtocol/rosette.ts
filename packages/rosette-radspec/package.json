@@ -1,6 +1,6 @@
 {
   "name": "@blossom-labs/rosette-radspec",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Radspec is a safe alternative to Ethereum's natspec",
   "main": "dist/blossom-labs-rosette-radspec.cjs.js",
   "module": "dist/blossom-labs-rosette-radspec.esm.js",
