@@ -1,6 +1,6 @@
 {
   "name": "@blossom-labs/rosette-core",
-  "version": "0.1.1",
+  "version": "0.1.0",
   "description": "Core functionalities that enable to connect with the Rosette protocol",
   "main": "dist/blossom-labs-rosette-core.cjs.js",
   "module": "dist/blossom-labs-rosette-core.esm.js",
