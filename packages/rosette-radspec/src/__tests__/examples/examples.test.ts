@@ -321,38 +321,45 @@ const helperCases: Case[] = [
   [
     {
       source:
-        "Ethereum launched on a `@formatDate(date, 'EEEE')` in `@formatDate(date, 'MMMM yyyy')`",
+        "Ethereum launched on a `@formatDate(date, 'dddd')` in `@formatDate(date, 'MMMM YYYY')`",
       bindings: { date: int('1438269793') },
     },
     'Ethereum launched on a Thursday in July 2015',
   ],
   [
     {
-      source: "Period duration is `@transformTime(time, 'day')`",
+      source: "Period duration is `@transformTime(time, 'days')`",
       bindings: { time: int(3600 * 24 * 2 + 50) },
     },
     'Period duration is 2 days',
   ],
   [
     {
-      source: "Period duration is `@transformTime(time, 'best')`",
+      source: 'Period duration is `@transformTime(time)`',
       bindings: { time: int(3600 * 24 * 30) },
     },
-    'Period duration is 1 month',
+    'Period duration is a month',
   ],
   [
     {
       source: '3600 seconds is `@transformTime(3600)`',
       bindings: {},
     },
-    '3600 seconds is 1 hour',
+    '3600 seconds is an hour',
   ],
   [
     {
-      source: "10k minutes is `@transformTime(10 ^ 4, 'second', 'minute')`",
+      source: "10k minutes is `@transformTime(10 ^ 4, 'seconds', 'minutes')`",
       bindings: {},
     },
-    '10k minutes is 600000 seconds',
+    '10k minutes is 7 days',
+  ],
+  [
+    {
+      source: "30 days is `@transformTime(30, 'months', 'days')`",
+      bindings: {},
+    },
+    '30 days is a month',
   ],
   [
     {

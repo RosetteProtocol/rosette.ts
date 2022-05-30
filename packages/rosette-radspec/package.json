@@ -27,7 +27,7 @@
     "@blossom-labs/rosette-test": "workspace:^0.0.1"
   },
   "dependencies": {
-    "date-fns": "^2.26.0"
+    "dayjs": "^1.11.2"
   },
   "peerDependencies": {
     "@blossom-labs/rosette-core": "workspace:^0.1.0",
