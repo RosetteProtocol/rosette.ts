@@ -33,9 +33,7 @@ describe('Radspec', () => {
         data: '0x2fb1b25f0000000000000000000000000000000000000000000000000000000000000001',
       };
 
-      await expect(evaluate(tx, provider, { fetcher })).resolves.toBe(
-        'Sign guideline 1',
-      );
+      await expect(evaluate(tx, provider)).resolves.toBe('Sign guideline 1');
     });
 
     it('fails when trying to evaluate an invalid transaction', async () => {

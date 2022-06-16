@@ -41,9 +41,9 @@ export interface EvaluateOptions {
 async function evaluate(
   transaction: Transaction,
   provider: providers.Provider,
-  options: EvaluateOptions,
+  options?: EvaluateOptions,
 ): Promise<string | undefined> {
-  const { fetcher = getDefaultFetcher(), userHelpers = {} } = options;
+  const { fetcher = getDefaultFetcher(), userHelpers = {} } = options || {};
   const sigHash = getSigHash(transaction.data);
   const { abi, notice } = await fetcher.entry(
     transaction.to,
@@ -66,6 +66,7 @@ async function evaluate(
 
 export default evaluate;
 export { evaluate, evaluateRaw };
+export { decodeCalldata };
 
 // Re-export some commonly used inner functionality
 export { parse } from './parser';
