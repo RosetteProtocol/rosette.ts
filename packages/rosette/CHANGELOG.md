@@ -1,5 +1,11 @@
 # @blossom-labs/rosette
 
+## 0.1.2
+
+### Patch Changes
+
+- 5ee8d3d: Re-export rosette's modules
+
 ## 0.1.1
 
 ### Patch Changes
