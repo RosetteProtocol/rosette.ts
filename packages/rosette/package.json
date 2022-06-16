@@ -1,6 +1,6 @@
 {
   "name": "@blossom-labs/rosette",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Main library for interacting with the Rosette protocol",
   "main": "dist/blossom-labs-rosette.cjs.js",
   "module": "dist/blossom-labs-rosette.esm.js",
