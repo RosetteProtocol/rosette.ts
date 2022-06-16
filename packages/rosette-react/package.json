@@ -1,6 +1,6 @@
 {
   "name": "@blossom-labs/rosette-react",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "A React library for interacting with the Rosette protocol",
   "main": "dist/blossom-labs-rosette-react.cjs.js",
   "module": "dist/blossom-labs-rosette-react.esm.js",
@@ -34,6 +34,6 @@
     "react": ">=17.0.0"
   },
   "dependencies": {
-    "@blossom-labs/rosette": "workspace:^0.1.0"
+    "@blossom-labs/rosette": "workspace:^0.1.3"
   }
 }
