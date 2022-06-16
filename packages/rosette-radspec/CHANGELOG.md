@@ -1,5 +1,13 @@
 # @blossom-labs/rosette-radspec
 
+## 0.1.1
+
+### Patch Changes
+
+- 98bbdbf: Build fixes
+- Updated dependencies [98bbdbf]
+  - @blossom-labs/rosette-core@0.1.1
+
 ## 1.0.0
 
 ### Minor Changes

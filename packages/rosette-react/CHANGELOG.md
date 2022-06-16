@@ -1,5 +1,13 @@
 # @blossom-labs/rosette-react
 
+## 0.1.1
+
+### Patch Changes
+
+- 98bbdbf: Build fixes
+- Updated dependencies [98bbdbf]
+  - @blossom-labs/rosette@0.1.3
+
 ## 0.1.0
 
 ### Minor Changes

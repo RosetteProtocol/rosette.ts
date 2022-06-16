@@ -1,5 +1,11 @@
 # @blossom-labs/rosette-core
 
+## 0.1.1
+
+### Patch Changes
+
+- 98bbdbf: Build fixes
+
 ## 0.1.0
 
 ### Minor Changes
