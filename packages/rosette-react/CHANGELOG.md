@@ -1,6 +1,6 @@
 # @blossom-labs/rosette-react
 
-## 0.1.1
+## 0.1.2
 
 ### Patch Changes
 

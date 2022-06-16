@@ -28,7 +28,7 @@
     "ethers": "^5.6.4"
   },
   "dependencies": {
-    "@blossom-labs/rosette-core": "workspace:^0.1.1",
-    "@blossom-labs/rosette-radspec": "workspace:^0.1.1"
+    "@blossom-labs/rosette-core": "workspace:^0.1.2",
+    "@blossom-labs/rosette-radspec": "workspace:^0.1.2"
   }
 }
