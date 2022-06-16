@@ -22,6 +22,7 @@
     "prettier"
   ],
   "rules": {
+    "import/export": 0,
     // `eslint-plugin-import`
     // https://github.com/benmosher/eslint-plugin-import
     "@typescript-eslint/explicit-function-return-type": [
