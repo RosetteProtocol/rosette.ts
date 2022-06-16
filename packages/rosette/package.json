@@ -4,8 +4,10 @@
   "description": "Main library for interacting with the Rosette protocol",
   "main": "dist/blossom-labs-rosette.cjs.js",
   "module": "dist/blossom-labs-rosette.esm.js",
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "preinstall": "npx only-allow pnpm",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

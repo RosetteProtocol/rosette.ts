@@ -4,8 +4,10 @@
   "description": "Core functionalities that enable to connect with the Rosette protocol",
   "main": "dist/blossom-labs-rosette-core.cjs.js",
   "module": "dist/blossom-labs-rosette-core.esm.js",
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "preinstall": "npx only-allow pnpm",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
