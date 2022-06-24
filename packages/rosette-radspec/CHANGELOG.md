@@ -1,5 +1,12 @@
 # @blossom-labs/rosette-radspec
 
+## 0.1.3
+
+### Patch Changes
+
+- 9dfce6e: Changes to `evaluateRaw()` parameters to improve legibility.
+  Re-export types and additional functionality.
+
 ## 0.1.2
 
 ### Patch Changes
