@@ -22,11 +22,10 @@ export const radspec: RadspecHelper =
 
     return new TypedValue(
       'string',
-      await evaluateRaw(notice, bindings, {
-        fetcher,
-        provider,
+      await evaluateRaw(notice, bindings, provider, {
         availableHelpers: helperManager.availableHelpers,
-        transaction: transaction,
+        fetcher,
+        transaction,
       }),
     );
   };

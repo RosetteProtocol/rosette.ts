@@ -17,7 +17,7 @@ type EvaluateRawParameters = Parameters<typeof evaluateRaw>;
 type EvaluateRawTestParams = {
   source: EvaluateRawParameters['0'];
   bindings?: EvaluateRawParameters['1'];
-  options?: Partial<EvaluateRawParameters['2']>;
+  options?: Partial<EvaluateRawParameters['3']>;
 };
 
 type Case = [EvaluateRawTestParams, string];
@@ -801,10 +801,9 @@ describe('Test radspec examples', () => {
   cases.forEach(([input, expected], index) => {
     it(`${index} - ${input.source}`, async () => {
       // const { userHelpers, userFunctions = {} } = input.options || {};
-      const actual = evaluateRaw(input.source, input.bindings ?? {}, {
+      const actual = evaluateRaw(input.source, input.bindings ?? {}, provider, {
         availableHelpers: { ...defaultHelpers /*, ...userHelpers  */ },
         fetcher,
-        provider,
         transaction: { to: '', data: '' },
         ...input.options,
         // availableFunctions: { ...knownFunctions /*, ...userFunctions */ },

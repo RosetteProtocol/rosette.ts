@@ -1,4 +1,20 @@
 {
+  "0x827429f97d1a28ae10452c067889d51d66585d2dc63ffc4a01ca96438500cd22": {
+    "data": {
+      "contract": {
+        "functions": [
+          {
+            "id": "0x827429f97d1a28ae10452c067889d51d66585d2dc63ffc4a01ca96438500cd22-0xb4b333c6",
+            "abi": "function deleteFlow(address token, address sender, address receiver, bytes ctx)",
+            "cid": "QmPeWHhDFEiYStyADgd332kmDV4E5hgWVgyG3KL4i8tktc",
+            "disputed": false,
+            "notice": "Delete `token.symbol(): string` flow from `sender` to `receiver`",
+            "sigHash": "0xb4b333c6"
+          }
+        ]
+      }
+    }
+  },
   "0xffdac63ea5cd5767b79bec5e972a17bae6dde90e0e60ff1a07546c1f073cfe94": {
     "data": {
       "contract": {
