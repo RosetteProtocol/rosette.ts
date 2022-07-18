@@ -2,6 +2,7 @@ export type Address = string;
 
 export enum Network {
   rinkeby = 4,
+  goerli = 5,
   // gnosisChain = 100,
 }
 

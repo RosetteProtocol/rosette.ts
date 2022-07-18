@@ -19,7 +19,7 @@ import {
 export type FetcherOptions = {
   ipfsGateway?: string;
   rosetteNetworkId?: Network;
-  rpcEndpoint?: string;
+  provider?: Provider;
 };
 
 export type Entry = [Address, string[]];
@@ -35,7 +35,7 @@ export class Fetcher {
   #rosetteStone: Contract;
 
   constructor(options: FetcherOptions = {}) {
-    const { ipfsGateway, rosetteNetworkId, rpcEndpoint } = options;
+    const { ipfsGateway, rosetteNetworkId, provider } = options;
     const config = Config[rosetteNetworkId ?? DEFAULT_NETWORK];
 
     if (!config) {
@@ -48,7 +48,7 @@ export class Fetcher {
     this.#rosetteStone = new Contract(
       config.contractAddresses.rosetteStone,
       rosetteStoneAbi,
-      new providers.StaticJsonRpcProvider(rpcEndpoint ?? config.rpcEndpoint),
+      provider ?? providers.getDefaultProvider(rosetteNetworkId),
     );
   }
 

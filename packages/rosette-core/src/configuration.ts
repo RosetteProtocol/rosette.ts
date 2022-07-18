@@ -5,7 +5,6 @@ type Configuration = {
     rosetteStone: string;
   };
   subgraphUrl: string;
-  rpcEndpoint: string;
 };
 
 export const Config: Record<Network, Configuration> = {
@@ -15,9 +14,14 @@ export const Config: Record<Network, Configuration> = {
     },
     subgraphUrl:
       'https://api.thegraph.com/subgraphs/name/blossomlabs/rosette-stone-rinkeby',
-    rpcEndpoint:
-      'https://speedy-nodes-nyc.moralis.io/cff107316eaa320c66ca9c51/eth/rinkeby',
+  },
+  [Network.goerli]: {
+    contractAddresses: {
+      rosetteStone: '0x7e18c76aa26bd6bd04196e34c93a925498a5d0f1',
+    },
+    subgraphUrl:
+      'https://api.thegraph.com/subgraphs/name/blossomlabs/rosette-stone-goerli',
   },
 };
 
-export const DEFAULT_NETWORK: Network = 4;
+export const DEFAULT_NETWORK: Network = 5;

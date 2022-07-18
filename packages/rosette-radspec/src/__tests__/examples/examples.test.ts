@@ -3,7 +3,7 @@ import {
   DEFAULT_TEST_SERVER_CONFIG,
   setUpTestServer,
 } from '@blossom-labs/rosette-test';
-import { BigNumber, utils as ethersUtils, providers } from 'ethers';
+import { BigNumber, providers } from 'ethers';
 
 import { TypedValue } from '../../evaluator';
 import { evaluateRaw } from '../../lib';
@@ -23,15 +23,6 @@ type EvaluateRawTestParams = {
 type Case = [EvaluateRawTestParams, string];
 
 // TODO: include user helpers and functions
-
-const knownFunctions = {
-  'setOwner(address)': 'Set `$1` as the new owner',
-  'setOwner(bytes32,address)': 'Set `$2` as the new owner of the `$1` node',
-  'transfer(address,uint256)': 'Transfer `@tokenAmount(self, $2)` to `$1`',
-  'payday()': 'Get owed Payroll allowance',
-  'approveAndCall(address,uint256,bytes)':
-    'Approve `$1` to spend `@tokenAmount(self, $2)` on your behalf and trigger a function in the contract at `$1`',
-};
 
 const int = (value: any): TypedValue => new TypedValue('int256', value);
 
@@ -190,46 +181,46 @@ const helperCases: Case[] = [
   ],
   [
     {
-      source: 'Balance: `@tokenAmount(token, balance, false, 5)` ANT',
+      source: 'Balance: `@tokenAmount(token, balance, false, 5)` TST',
       bindings: {
-        token: address('0x0D5263B7969144a852D58505602f630f9b20239D'),
+        token: address('0x7af963cF6D228E564e2A0aA0DdBF06210B38615D'),
         balance: int('647413054590000000000000'),
       },
     },
-    'Balance: 647413.05459 ANT',
+    'Balance: 647413.05459 TST',
   ],
   [
     {
       source:
-        'Balance: `@tokenAmount(token, balance, false, 5)` ANT (non-checksummed)',
+        'Balance: `@tokenAmount(token, balance, false, 5)` TST (non-checksummed)',
       bindings: {
-        token: address('0x0D5263B7969144a852D58505602f630f9b20239D'),
+        token: address('0x7af963cF6D228E564e2A0aA0DdBF06210B38615D'),
         balance: int('647413054590000000000000'),
       },
     },
-    'Balance: 647413.05459 ANT (non-checksummed)',
+    'Balance: 647413.05459 TST (non-checksummed)',
   ],
   [
     {
       source:
-        'Balance: `@tokenAmount(token, balance, false, 7)` ANT (trailing zeros)',
+        'Balance: `@tokenAmount(token, balance, false, 7)` TST (trailing zeros)',
       bindings: {
-        token: address('0x0D5263B7969144a852D58505602f630f9b20239D'),
+        token: address('0x7af963cF6D228E564e2A0aA0DdBF06210B38615D'),
         balance: int('647413054590000000000000'),
       },
     },
-    'Balance: 647413.0545900 ANT (trailing zeros)',
+    'Balance: 647413.0545900 TST (trailing zeros)',
   ],
   [
     {
       source:
-        'Balance: `@tokenAmount(token, balance, false, 5)` ANT (non-precise)',
+        'Balance: `@tokenAmount(token, balance, false, 5)` TST (non-precise)',
       bindings: {
-        token: address('0x0D5263B7969144a852D58505602f630f9b20239D'),
+        token: address('0x7af963cF6D228E564e2A0aA0DdBF06210B38615D'),
         balance: int('647413054595780000000000'),
       },
     },
-    'Balance: ~647413.05459 ANT (non-precise)',
+    'Balance: ~647413.05459 TST (non-precise)',
   ],
   [
     {
@@ -245,17 +236,7 @@ const helperCases: Case[] = [
     {
       source: 'Balance: `@tokenAmount(token, balance)`',
       bindings: {
-        token: address('0xFf16ec7ff5f021B6e444EEBD50382FCf43D3BD24'),
-        balance: int('10'),
-      },
-    },
-    'Balance: 0.00000000000000001 UNIC',
-  ],
-  [
-    {
-      source: 'Balance: `@tokenAmount(token, balance)`',
-      bindings: {
-        token: address('0x5592EC0cfb4dbc12D3aB100b257153436a1f0FEa'),
+        token: address('0x73967c6a0904aA032C103b4104747E88c566B1A2'),
         balance: int('10000000000000000000'),
       },
     },
@@ -265,7 +246,7 @@ const helperCases: Case[] = [
     {
       source: 'Balance: `@tokenAmount(token, balance)`',
       bindings: {
-        token: address('0x5592EC0cfb4dbc12D3aB100b257153436a1f0FEa'),
+        token: address('0x73967c6a0904aA032C103b4104747E88c566B1A2'),
         balance: int('1000000000000000'),
       },
     },
@@ -275,7 +256,7 @@ const helperCases: Case[] = [
     {
       source: 'Balance: `@tokenAmount(token, balance)`',
       bindings: {
-        token: address('0x5592EC0cfb4dbc12D3aB100b257153436a1f0FEa'),
+        token: address('0x73967c6a0904aA032C103b4104747E88c566B1A2'),
         balance: int('1'),
       },
     },
@@ -285,7 +266,7 @@ const helperCases: Case[] = [
     {
       source: 'Balance: `@tokenAmount(token, balance, true, 3)`',
       bindings: {
-        token: address('0x5592EC0cfb4dbc12D3aB100b257153436a1f0FEa'),
+        token: address('0x73967c6a0904aA032C103b4104747E88c566B1A2'),
         balance: int('1'),
       },
     },
@@ -295,7 +276,7 @@ const helperCases: Case[] = [
     {
       source: 'Balance: `@tokenAmount(token, balance, true, 3)`',
       bindings: {
-        token: address('0x5592EC0cfb4dbc12D3aB100b257153436a1f0FEa'),
+        token: address('0x73967c6a0904aA032C103b4104747E88c566B1A2'),
         balance: int('1000000000000000001'),
       },
     },
@@ -305,7 +286,7 @@ const helperCases: Case[] = [
     {
       source: 'Balance: `@tokenAmount(token, balance)`',
       bindings: {
-        token: address('0x5592EC0cfb4dbc12D3aB100b257153436a1f0FEa'),
+        token: address('0x73967c6a0904aA032C103b4104747E88c566B1A2'),
         balance: int('1000000000000000001'),
       },
     },
@@ -386,6 +367,25 @@ const helperCases: Case[] = [
     },
     'Change required support to ~40.4%',
   ],
+  [
+    {
+      source: 'Transfer `@tokenAmount(self, value)` to `to`',
+      bindings: {
+        to: address('0xB8138d12FDd1A38C4b63d4ED7703f5CD9639eFbf'),
+        value: {
+          type: 'uint256',
+          value: 1000000,
+        },
+      },
+      options: {
+        transaction: {
+          to: '0x07865c6e87b9f70255377e024ace6630c1eaa37f',
+          data: '',
+        },
+      },
+    },
+    'Transfer 1 USDC to 0xB8138d12FDd1A38C4b63d4ED7703f5CD9639eFbf',
+  ],
   // [
   //   {
   //     source: 'The genesis block is #`@getBlock(n)`',
@@ -430,25 +430,13 @@ const dataDecodeCases: Case[] = [
     {
       source: 'Transfer: `@radspec(addr, data)`',
       bindings: {
-        addr: address('0x0D5263B7969144a852D58505602f630f9b20239D'),
+        addr: address('0x6AD196dBcd43996F17638B924d2fdEDFF6Fdd677'),
         data: bytes(
-          '0xa9059cbb00000000000000000000000031ab1f92344e3277ce9404e4e097dab7514e6d2700000000000000000000000000000000000000000000000821ab0d4414980000',
-        ), // transfer(), on knownFunctions requiring helpers
+          '0xa9059cbb000000000000000000000000efd52a9e454feb9ad8edca588c7a9703d67cdff700000000000000000000000000000000000000000000000000000000004c4b40',
+        ),
       },
     },
-    'Transfer: Transfer 150 ANT to 0x31AB1f92344e3277ce9404E4e097dab7514E6D27',
-  ],
-  [
-    {
-      source: 'ApproveAndCall: `@radspec(addr, data)`',
-      bindings: {
-        addr: address('0x0D5263B7969144a852D58505602f630f9b20239D'),
-        data: bytes(
-          '0xcae9ca510000000000000000000000000256bf39b5f51c6b151edd897a1f2ab97a1c7aba0000000000000000000000000000000000000000000000056bc75e2d63100000000000000000000000000000000000000000000000000000000000000000006000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000',
-        ), // approveAndCall(address,uint256,bytes), on knownFunctions requiring helpers
-      },
-    },
-    'ApproveAndCall: Approve 0x0256bF39B5f51c6B151edd897a1f2ab97A1C7aBA to spend 100 ANT on your behalf and trigger a function in the contract at 0x0256bF39B5f51c6B151edd897a1f2ab97A1C7aBA',
+    'Transfer: Transfer 5 USDT to 0xeFD52a9E454FEB9Ad8edCA588c7a9703d67cdFF7',
   ],
 ];
 
@@ -573,31 +561,31 @@ const cases: Case[] = [
       source: 'Allocate `amount token.symbol(): string`.',
       bindings: {
         amount: int(100),
-        token: address('0x0D5263B7969144a852D58505602f630f9b20239D'),
+        token: address('0x7af963cF6D228E564e2A0aA0DdBF06210B38615D'),
       },
     },
-    'Allocate 100 ANT.',
+    'Allocate 100 TST.',
   ],
   [
     {
       source: 'Allocate `amount token.symbol(): string` (non-checksummed).',
       bindings: {
         amount: int(100),
-        token: address('0x0D5263B7969144a852D58505602f630f9b20239D'),
+        token: address('0x7af963cF6D228E564e2A0aA0DdBF06210B38615D'),
       },
     },
-    'Allocate 100 ANT (non-checksummed).',
+    'Allocate 100 TST (non-checksummed).',
   ],
   [
     {
       source:
         'Burns the `token.symbol(): string` balance of `person` (balance is `token.balanceOf(person): uint256 / 1000000000000000000`)',
       bindings: {
-        token: address('0x0D5263B7969144a852D58505602f630f9b20239D'),
+        token: address('0x7af963cF6D228E564e2A0aA0DdBF06210B38615D'),
         person: address('0x0000000000000000000000000000000000000001'),
       },
     },
-    'Burns the ANT balance of 0x0000000000000000000000000000000000000001 (balance is 0)',
+    'Burns the TST balance of 0x0000000000000000000000000000000000000001 (balance is 2)',
   ],
   [
     {
@@ -608,12 +596,12 @@ const cases: Case[] = [
       },
       options: {
         transaction: {
-          to: '0x0D5263B7969144a852D58505602f630f9b20239D',
+          to: '0x7af963cF6D228E564e2A0aA0DdBF06210B38615D',
           data: '',
         },
       },
     },
-    'Burns the ANT balance of 0x0000000000000000000000000000000000000001 (balance is 0)',
+    'Burns the TST balance of 0x0000000000000000000000000000000000000001 (balance is 2)',
   ],
   [
     {
@@ -621,10 +609,10 @@ const cases: Case[] = [
         "Initialize Finance app for Vault at `_vault` with period length of `(_periodDuration - _periodDuration % 86400) / 86400` day`_periodDuration >= 172800 ? 's' : ' '`",
       bindings: {
         _periodDuration: int(86400 * 2),
-        _vault: address('0x0D5263B7969144a852D58505602f630f9b20239D'),
+        _vault: address('0x7af963cF6D228E564e2A0aA0DdBF06210B38615D'),
       },
     },
-    'Initialize Finance app for Vault at 0x0D5263B7969144a852D58505602f630f9b20239D with period length of 2 days',
+    'Initialize Finance app for Vault at 0x7af963cF6D228E564e2A0aA0DdBF06210B38615D with period length of 2 days',
   ],
   [
     {
@@ -656,53 +644,83 @@ const cases: Case[] = [
   [
     {
       source:
-        'Explicit: Transaction with ID `txId` was sent to `self.getTransaction(txId): (uint64, uint256, uint256, uint64, address, <address>, bool, uint64)`',
-      bindings: { txId: { type: 'uint256', value: 1 } },
+        'Explicit: Entry with scope `_scope` and sig `_sig` has the following cid: `self.getEntry(_scope,_sig): (<bytes>, address, uint8)`',
+      bindings: {
+        _scope: {
+          type: 'bytes32',
+          value:
+            '0xd158dc79b68f7ef6037f06b5206d049ca17ba8f2201e2316aff6cbb15d8b5d1e',
+        },
+        _sig: {
+          type: 'bytes4',
+          value: '0x3d5d7555',
+        },
+      },
       options: {
         transaction: {
-          to: '0xefc27f01e2a7e3f24a7e5ebd87e64cd2ca3c5a44',
+          to: '0x7e18C76Aa26BD6bD04196e34C93a925498A5d0F1',
           data: '',
         },
       },
     },
-    'Explicit: Transaction with ID 1 was sent to 0x14FA5C16Af56190239B997485656F5c8b4f86c4b',
+    'Explicit: Entry with scope 0xd158dc79b68f7ef6037f06b5206d049ca17ba8f2201e2316aff6cbb15d8b5d1e and sig 0x3d5d7555 has the following cid: 0x516d4e6657394e393954657655556e6f4d436453796e7a53706b47426246754e6a6271726b424665317134504c56',
   ],
   [
     {
       source: 'Implicit: `token.symbol(): (string)`',
       bindings: {
-        token: address('0x0D5263B7969144a852D58505602f630f9b20239D'),
+        token: address('0x7af963cF6D228E564e2A0aA0DdBF06210B38615D'),
       },
     },
-    'Implicit: ANT',
+    'Implicit: TST',
   ],
   [
     {
       source:
-        'Explicit (last type): `self.getTransaction(txId): (uint64, uint256, uint256, uint64, address, address, bool, <uint64>)`',
-      bindings: { txId: { type: 'uint256', value: 1 } },
+        'Explicit (last type): `self.getEntry(_scope,_sig): (bytes, address, <uint8>)`',
+      bindings: {
+        _scope: {
+          type: 'bytes32',
+          value:
+            '0xd158dc79b68f7ef6037f06b5206d049ca17ba8f2201e2316aff6cbb15d8b5d1e',
+        },
+        _sig: {
+          type: 'bytes4',
+          value: '0x3d5d7555',
+        },
+      },
       options: {
         transaction: {
-          to: '0xefc27f01e2a7e3f24a7e5ebd87e64cd2ca3c5a44',
+          to: '0x7e18C76Aa26BD6bD04196e34C93a925498A5d0F1',
           data: '',
         },
       },
     },
-    'Explicit (last type): 1644693609',
+    'Explicit (last type): 1',
   ],
   [
     {
       source:
-        'Explicit (first type): `self.getTransaction(txId): (<uint64>, uint256, uint256, uint64, address, address, bool, uint64)`',
-      bindings: { txId: { type: 'uint256', value: 1 } },
+        'Explicit (first type): `self.getEntry(_scope,_sig): (<bytes>, address, uint8)`',
+      bindings: {
+        _scope: {
+          type: 'bytes32',
+          value:
+            '0xd158dc79b68f7ef6037f06b5206d049ca17ba8f2201e2316aff6cbb15d8b5d1e',
+        },
+        _sig: {
+          type: 'bytes4',
+          value: '0x3d5d7555',
+        },
+      },
       options: {
         transaction: {
-          to: '0xefc27f01e2a7e3f24a7e5ebd87e64cd2ca3c5a44',
+          to: '0x7e18C76Aa26BD6bD04196e34C93a925498A5d0F1',
           data: '',
         },
       },
     },
-    'Explicit (first type): 0',
+    'Explicit (first type): 0x516d4e6657394e393954657655556e6f4d436453796e7a53706b47426246754e6a6271726b424665317134504c56',
   ],
 
   // msg.(sender | value | data) options
@@ -749,11 +767,11 @@ const cases: Case[] = [
     {
       source: 'Sending tx with data `msg.data` to contract at `contract`',
       bindings: {
-        contract: address('0x0D5263B7969144a852D58505602f630f9b20239D'),
+        contract: address('0x7af963cF6D228E564e2A0aA0DdBF06210B38615D'),
       },
       options: { transaction: { to: '', data: '0xabcdef' } },
     },
-    'Sending tx with data 0xabcdef to contract at 0x0D5263B7969144a852D58505602f630f9b20239D',
+    'Sending tx with data 0xabcdef to contract at 0x7af963cF6D228E564e2A0aA0DdBF06210B38615D',
   ],
 
   // using msg.data on a helper
@@ -761,18 +779,16 @@ const cases: Case[] = [
     {
       source: 'Performs a call to `@radspec(contract, msg.data)`',
       bindings: {
-        contract: address('0x0D5263B7969144a852D58505602f630f9b20239D'),
+        contract: address('0xeD9f02371AD4B242Ee479f04F4f17D6F56E3A686'),
       },
       options: {
         transaction: {
           to: '',
-          data: ethersUtils
-            .keccak256(ethersUtils.toUtf8Bytes(Object.keys(knownFunctions)[3]))
-            .slice(0, 10),
+          data: '0x6881385b',
         },
       },
     },
-    `Performs a call to ${Object.values(knownFunctions)[3]}`,
+    `Performs a call to Get owed Payroll allowance`,
   ],
 
   ...comparisonCases,
@@ -788,14 +804,13 @@ describe('Test radspec examples', () => {
 
   setUpTestServer();
 
-  beforeAll(() => {
+  beforeAll(async () => {
+    provider = new providers.JsonRpcProvider(rpcEndpoint);
     fetcher = new Fetcher({
       ipfsGateway,
-      rpcEndpoint,
       rosetteNetworkId: network,
+      provider,
     });
-
-    provider = new providers.JsonRpcProvider(rpcEndpoint);
   });
 
   cases.forEach(([input, expected], index) => {

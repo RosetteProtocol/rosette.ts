@@ -22,9 +22,9 @@ describe('Client', () => {
   beforeEach(async () => {
     client = new Client({
       fetcherOptions: {
-        rpcEndpoint,
         ipfsGateway,
         rosetteNetworkId: network,
+        provider,
       },
     });
   });

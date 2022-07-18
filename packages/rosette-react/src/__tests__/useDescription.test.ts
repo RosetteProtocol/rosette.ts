@@ -34,18 +34,23 @@ describe('useDescription', () => {
     it('throws an error when fetching a non-existent description', async () => {
       tx = {
         to: '0x01be23585060835e02b77ef475b0cc51aa1e0709',
-        data: '0xa9059cbb000000000000000000000000e606ccd923323f39874311b8323f7275e85e6fb30000000000000000000000000000000000000000000000008ac7230489e80000',
+        data: '0x431f1481000000000000000000000000ea613e86842a6bbe2a7de22e1601af550bf3c3720000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000008000000000000000000000000000000000000000000000000000000000000000c0000000000000000000000000000000000000000000000000000000000000000454444c7800000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000454444c7800000000000000000000000000000000000000000000000000000000',
       };
       const { result, waitFor } = renderRosetteHook(() => useDescription(tx));
 
-      await waitFor(() => expect(result.current[1]).toBeFalsy());
+      await waitFor(
+        () => {
+          expect(result.current[1]).toBeFalsy();
+        },
+        { timeout: 5000 },
+      );
 
       const hookRes = result.current;
       expect(hookRes).toMatchInlineSnapshot(`
         [
           undefined,
           false,
-          [NotFoundError: No description entry found for signature 0xa9059cbb of contract 0x01be23585060835e02b77ef475b0cc51aa1e0709],
+          [NotFoundError: No description entry found for signature 0x431f1481 of contract 0x01be23585060835e02b77ef475b0cc51aa1e0709],
         ]
       `);
     });

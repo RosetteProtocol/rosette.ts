@@ -16,7 +16,7 @@ type TestServerConfig = {
 };
 
 export const DEFAULT_TEST_SERVER_CONFIG = {
-  network: 4,
+  network: 5,
   ipfsGateway: 'https://ipfs.io/ipfs/',
   rpcEndpoint: 'http://localhost:8545/',
 };
@@ -43,7 +43,7 @@ const createBaseHandlers = ({
       }),
     );
   }),
-  graphql.query('FunctionEntry', (req, res, ctx) => {
+  graphql.query('Function', (req, res, ctx) => {
     const { entryId, allowDisputed } = req.variables;
     const [bytecodeHash] = entryId.split('-');
     const selectedContract = subgraphFixture[bytecodeHash];
@@ -55,7 +55,7 @@ const createBaseHandlers = ({
 
     return res(ctx.status(200), ctx.data({ function: _function }));
   }),
-  graphql.query('FunctionEntries', (req, res, ctx) => {
+  graphql.query('Functions', (req, res, ctx) => {
     const { entryIds, allowDisputed } = req.variables;
     const functions: any[] = [];
 

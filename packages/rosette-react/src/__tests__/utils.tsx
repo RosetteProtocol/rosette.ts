@@ -6,20 +6,27 @@ import { providers } from 'ethers';
 import type { RosetteProviderProps } from '../providers/Rosette';
 import { RosetteProvider } from '../providers/Rosette';
 
-const TEST_RPC_ENDPOINT = DEFAULT_TEST_SERVER_CONFIG.rpcEndpoint;
+const { ipfsGateway, network, rpcEndpoint } = DEFAULT_TEST_SERVER_CONFIG;
 
-type Props = RosetteProviderProps & {
+type ProviderProps = Partial<RosetteProviderProps> & {
   children?:
     | React.ReactElement<any, string | React.JSXElementConstructor<any>>
     | React.ReactNode;
 };
 
-const AllProviders = ({ children, provider, ...props }: Props) => {
-  const provider_ =
-    provider ?? new providers.JsonRpcProvider(TEST_RPC_ENDPOINT);
+const AllProviders = ({
+  children,
+  provider,
+  options,
+  ...props
+}: ProviderProps) => {
+  const provider_ = provider ?? new providers.JsonRpcProvider(rpcEndpoint);
+  const options_ = options ?? {
+    fetcherOptions: { rosetteNetworkId: network, ipfsGateway },
+  };
 
   return (
-    <RosetteProvider provider={provider_} {...props}>
+    <RosetteProvider provider={provider_} options={options_} {...props}>
       {children}
     </RosetteProvider>
   );
@@ -30,7 +37,7 @@ export const renderRosetteHook = <TProps, TResult>(
   {
     wrapper: wrapper_,
     ...options_
-  }: RenderHookOptions<TProps & RosetteProviderProps> | undefined = {},
+  }: RenderHookOptions<TProps & ProviderProps> | undefined = {},
 ) => {
   const defaultWrapper = (props: any) =>
     AllProviders({ ...props, ...options_.initialProps });

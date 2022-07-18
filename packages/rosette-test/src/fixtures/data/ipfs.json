@@ -3,8 +3,12 @@
     "abi": "function removeEntry(bytes32 _scope, bytes4 _sig)",
     "notice": "Remove an entry from the registry with `_scope` and `_sig`"
   },
-  "QmQBWU4C9y9hQzw3NFiBsYPD21V1aFpDKTz6eZzgqmBS88": {
+  "QmUn2qnjSJAE1xHm4uXsnSd9gzjeRrMwc9sCcGpLDzm19e": {
     "abi": "function upsertEntry(bytes32 _scope, bytes4 _sig, bytes _cid) payable",
-    "notice": "Upsert an entry with `_scope` and `_sig` with medata located in `@fromHex(_cid)`"
+    "notice": "Upsert a description entry located in `@fromHex(_cid)` for function `_sig` on scope `_scope` "
+  },
+  "Qmd3S83W82yeDUyLQaXWnuoTbswV7qe7fFW99p69E2DNFj": {
+    "abi": "function transfer(address _to, uint256 _value)",
+    "notice": "Transfer `@tokenAmount(self,_value)` to `_to`"
   }
 }
