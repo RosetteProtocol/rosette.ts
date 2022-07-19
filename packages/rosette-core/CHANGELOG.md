@@ -1,5 +1,11 @@
 # @blossom-labs/rosette-core
 
+## 0.1.3
+
+### Patch Changes
+
+- 525ac9d: Update libraries to work with Rosette's contracts on goerli network
+
 ## 0.1.2
 
 ### Patch Changes
