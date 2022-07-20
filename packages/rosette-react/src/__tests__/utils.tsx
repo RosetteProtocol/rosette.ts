@@ -8,6 +8,8 @@ import { RosetteProvider } from '../providers/Rosette';
 
 const { ipfsGateway, network, rpcEndpoint } = DEFAULT_TEST_SERVER_CONFIG;
 
+const DEFAULT_PROVIDER = new providers.JsonRpcProvider(rpcEndpoint);
+
 type ProviderProps = Partial<RosetteProviderProps> & {
   children?:
     | React.ReactElement<any, string | React.JSXElementConstructor<any>>
@@ -20,7 +22,7 @@ const AllProviders = ({
   options,
   ...props
 }: ProviderProps) => {
-  const provider_ = provider ?? new providers.JsonRpcProvider(rpcEndpoint);
+  const provider_ = provider ?? DEFAULT_PROVIDER;
   const options_ = options ?? {
     fetcherOptions: { rosetteNetworkId: network, ipfsGateway },
   };

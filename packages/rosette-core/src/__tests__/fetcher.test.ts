@@ -35,10 +35,13 @@ describe('Fetcher', () => {
               {
                 "abi": "function sign(uint256 _guidelineVersion)",
                 "cid": "QmPeWHhDFEiDStyADgd392kmDV4E5hgWVgyG3KL4i8tkbc",
-                "disputed": false,
+                "contract": "0x7e18C76Aa26BD6bD04196e34C93a925498A5d0F1",
                 "id": "0xd158dc79b68f7ef6037f06b5206d049ca17ba8f2201e2316aff6cbb15d8b5d1e-0x2fb1b25f",
                 "notice": "Sign guideline \`_guidelineVersion\`",
                 "sigHash": "0x2fb1b25f",
+                "status": "added",
+                "submitter": "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a",
+                "upsertAt": 1658143034,
               }
             `);
     });
@@ -50,10 +53,13 @@ describe('Fetcher', () => {
               {
                 "abi": "function changeGuideline(uint64 _cooldownPeriod,uint64 _gracePeriod, uint256 _collateralAmount,bytes calldata _metadata) external",
                 "cid": "QmUxSKkHGeivK2bCRuLQ9ukNkr1KY5RJZzSzFLsrG8w1WS",
-                "disputed": false,
+                "contract": "0x7e18C76Aa26BD6bD04196e34C93a925498A5d0F1",
                 "id": "0xd158dc79b68f7ef6037f06b5206d049ca17ba8f2201e2316aff6cbb15d8b5d1e-0xc1c5761b",
                 "notice": "Update to a guideline with a \`@transformTime(_cooldownPeriod)\`/\`@transformTime(_gracePeriod)\` cooldown/grace period and a collateral amount of \`@tokenAmount(0x0000000000000000000000000000000000000000, _collateralAmount)\`. The metadata is located on \`@fromHex(_metadata)\`",
                 "sigHash": "0xc1c5761b",
+                "status": "added",
+                "submitter": "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097",
+                "upsertAt": 1658153034,
               }
             `);
     });
@@ -66,10 +72,13 @@ describe('Fetcher', () => {
               {
                 "abi": "function upsertEntry(bytes32 _scope, bytes4 _sig, bytes _cid) payable",
                 "cid": "QmUn2qnjSJAE1xHm4uXsnSd9gzjeRrMwc9sCcGpLDzm19e",
-                "disputed": 46,
+                "contract": "0x7e18C76Aa26BD6bD04196e34C93a925498A5d0F1",
                 "id": "0xd158dc79b68f7ef6037f06b5206d049ca17ba8f2201e2316aff6cbb15d8b5d1e-0xd3cd7efa",
                 "notice": "Upsert a description entry located in \`@fromHex(_cid)\` for function \`_sig\` on scope \`_scope\` ",
                 "sigHash": "0xd3cd7efa",
+                "status": "added",
+                "submitter": "0x83E57888cd55C3ea1cfbf0114C963564d81e318d",
+                "upsertAt": 0,
               }
             `);
     });
@@ -88,7 +97,7 @@ describe('Fetcher', () => {
   describe('when fetching a group of entries', () => {
     let contractToSigHashes: [Address, string[]][];
     const contractAddresses = [
-      '0x0D5263B7969144a852D58505602f630f9b20239D',
+      '0x7af963cF6D228E564e2A0aA0DdBF06210B38615D',
       '0x7e18C76Aa26BD6bD04196e34C93a925498A5d0F1',
     ];
     const sigHashes = [
@@ -107,34 +116,46 @@ describe('Fetcher', () => {
                 {
                   "abi": "function payday()",
                   "cid": "QmNUy3tgcBwFhWrbuvaXGSgx5jrtFAqr5kU5ksKtxHRpjU",
-                  "disputed": false,
-                  "id": "0x39bef1777deb3dfb14f64b9f81ced092c501fee72f90e93d03bb95ee89df9837-0x6881385b",
+                  "contract": "0x0D5263B7969144a852D58505602f630f9b20239D",
+                  "id": "0x92941dd1fce5b10819f55100a7f07a78b4a175e0b4818ab8c4a511295767ab20-0x6881385b",
                   "notice": "Get owed Payroll allowance",
                   "sigHash": "0x6881385b",
+                  "status": "added",
+                  "submitter": "0x2546BcD3c84621e976D8185a91A922aE77ECEc30",
+                  "upsertAt": 1658160100,
                 },
                 {
                   "abi": "function transfer(address,uint256)",
                   "cid": "QmNUy3tgcBwFhWrbuvaXGSgx5jrtFAqr5kU5ksKtxHRpjU",
-                  "disputed": false,
-                  "id": "0x39bef1777deb3dfb14f64b9f81ced092c501fee72f90e93d03bb95ee89df9837-0xa9059cbb",
+                  "contract": "0x0D5263B7969144a852D58505602f630f9b20239D",
+                  "id": "0x92941dd1fce5b10819f55100a7f07a78b4a175e0b4818ab8c4a511295767ab20-0xa9059cbb",
                   "notice": "Transfer \`@tokenAmount(self, $2)\` to \`$1\`",
                   "sigHash": "0xa9059cbb",
+                  "status": "added",
+                  "submitter": "0x2546BcD3c84621e976D8185a91A922aE77ECEc30",
+                  "upsertAt": 1658158381,
                 },
                 {
                   "abi": "function upsertEntry(bytes32 _scope, bytes4 _sig, bytes _cid) payable",
                   "cid": "QmUn2qnjSJAE1xHm4uXsnSd9gzjeRrMwc9sCcGpLDzm19e",
-                  "disputed": 46,
+                  "contract": "0x7e18C76Aa26BD6bD04196e34C93a925498A5d0F1",
                   "id": "0xd158dc79b68f7ef6037f06b5206d049ca17ba8f2201e2316aff6cbb15d8b5d1e-0xd3cd7efa",
                   "notice": "Upsert a description entry located in \`@fromHex(_cid)\` for function \`_sig\` on scope \`_scope\` ",
                   "sigHash": "0xd3cd7efa",
+                  "status": "added",
+                  "submitter": "0x83E57888cd55C3ea1cfbf0114C963564d81e318d",
+                  "upsertAt": 0,
                 },
                 {
                   "abi": "function changeGuideline(uint64 _cooldownPeriod,uint64 _gracePeriod, uint256 _collateralAmount,bytes calldata _metadata) external",
                   "cid": "QmUxSKkHGeivK2bCRuLQ9ukNkr1KY5RJZzSzFLsrG8w1WS",
-                  "disputed": false,
+                  "contract": "0x7e18C76Aa26BD6bD04196e34C93a925498A5d0F1",
                   "id": "0xd158dc79b68f7ef6037f06b5206d049ca17ba8f2201e2316aff6cbb15d8b5d1e-0xc1c5761b",
                   "notice": "Update to a guideline with a \`@transformTime(_cooldownPeriod)\`/\`@transformTime(_gracePeriod)\` cooldown/grace period and a collateral amount of \`@tokenAmount(0x0000000000000000000000000000000000000000, _collateralAmount)\`. The metadata is located on \`@fromHex(_metadata)\`",
                   "sigHash": "0xc1c5761b",
+                  "status": "added",
+                  "submitter": "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097",
+                  "upsertAt": 1658153034,
                 },
               ]
             `);
@@ -166,18 +187,24 @@ describe('Fetcher', () => {
                 {
                   "abi": "function payday()",
                   "cid": "QmNUy3tgcBwFhWrbuvaXGSgx5jrtFAqr5kU5ksKtxHRpjU",
-                  "disputed": false,
-                  "id": "0x39bef1777deb3dfb14f64b9f81ced092c501fee72f90e93d03bb95ee89df9837-0x6881385b",
+                  "contract": "0x0D5263B7969144a852D58505602f630f9b20239D",
+                  "id": "0x92941dd1fce5b10819f55100a7f07a78b4a175e0b4818ab8c4a511295767ab20-0x6881385b",
                   "notice": "Get owed Payroll allowance",
                   "sigHash": "0x6881385b",
+                  "status": "added",
+                  "submitter": "0x2546BcD3c84621e976D8185a91A922aE77ECEc30",
+                  "upsertAt": 1658160100,
                 },
                 {
                   "abi": "function transfer(address,uint256)",
                   "cid": "QmNUy3tgcBwFhWrbuvaXGSgx5jrtFAqr5kU5ksKtxHRpjU",
-                  "disputed": false,
-                  "id": "0x39bef1777deb3dfb14f64b9f81ced092c501fee72f90e93d03bb95ee89df9837-0xa9059cbb",
+                  "contract": "0x0D5263B7969144a852D58505602f630f9b20239D",
+                  "id": "0x92941dd1fce5b10819f55100a7f07a78b4a175e0b4818ab8c4a511295767ab20-0xa9059cbb",
                   "notice": "Transfer \`@tokenAmount(self, $2)\` to \`$1\`",
                   "sigHash": "0xa9059cbb",
+                  "status": "added",
+                  "submitter": "0x2546BcD3c84621e976D8185a91A922aE77ECEc30",
+                  "upsertAt": 1658158381,
                 },
               ]
             `);
@@ -194,18 +221,24 @@ describe('Fetcher', () => {
                 {
                   "abi": "function sign(uint256 _guidelineVersion)",
                   "cid": "QmPeWHhDFEiDStyADgd392kmDV4E5hgWVgyG3KL4i8tkbc",
-                  "disputed": false,
+                  "contract": "0x7e18C76Aa26BD6bD04196e34C93a925498A5d0F1",
                   "id": "0xd158dc79b68f7ef6037f06b5206d049ca17ba8f2201e2316aff6cbb15d8b5d1e-0x2fb1b25f",
                   "notice": "Sign guideline \`_guidelineVersion\`",
                   "sigHash": "0x2fb1b25f",
+                  "status": "added",
+                  "submitter": "0xFABB0ac9d68B0B445fB7357272Ff202C5651694a",
+                  "upsertAt": 1658143034,
                 },
                 {
                   "abi": "function changeGuideline(uint64 _cooldownPeriod,uint64 _gracePeriod, uint256 _collateralAmount,bytes calldata _metadata) external",
                   "cid": "QmUxSKkHGeivK2bCRuLQ9ukNkr1KY5RJZzSzFLsrG8w1WS",
-                  "disputed": false,
+                  "contract": "0x7e18C76Aa26BD6bD04196e34C93a925498A5d0F1",
                   "id": "0xd158dc79b68f7ef6037f06b5206d049ca17ba8f2201e2316aff6cbb15d8b5d1e-0xc1c5761b",
                   "notice": "Update to a guideline with a \`@transformTime(_cooldownPeriod)\`/\`@transformTime(_gracePeriod)\` cooldown/grace period and a collateral amount of \`@tokenAmount(0x0000000000000000000000000000000000000000, _collateralAmount)\`. The metadata is located on \`@fromHex(_metadata)\`",
                   "sigHash": "0xc1c5761b",
+                  "status": "added",
+                  "submitter": "0xdF3e18d64BC6A983f673Ab319CCaE4f1a57C7097",
+                  "upsertAt": 1658153034,
                 },
               ]
             `);

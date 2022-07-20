@@ -4,6 +4,7 @@ import LRUCache from 'lru-cache';
 import { toUtf8String } from 'ethers/lib/utils';
 
 import type { Address, FnEntry, Network } from '../types';
+import { FnDescriptionStatus } from '../types';
 import { IPFSResolver } from './IPFSResolver';
 import { SubgraphConnector } from './subgraph-connector/SubgraphConnector';
 import rosetteStoneAbi from '../abis/RosetteStone.json';
@@ -90,6 +91,7 @@ export class Fetcher {
         getBytecodeHash(provider, address),
       ),
     );
+
     const bytecodeHashToContract = bytecodeHashes.reduce(
       (mapping, bytecodeHash, i) => ({
         ...mapping,
@@ -197,7 +199,7 @@ export class Fetcher {
       return _fnEntry;
     }
 
-    // Fallback to contract.
+    // Fetch entry from contract as fallback.
     if (!_fnEntry) {
       if (!fallbackData) {
         throw new Error('No fallback data provided');
@@ -205,13 +207,13 @@ export class Fetcher {
 
       const { contractAddress, bytecodeHash, sigHash } = fallbackData || {};
 
-      const [bytesCID, , , status] = await this.#rosetteStone.getEntry(
+      const [bytesCID, submitter, status] = await this.#rosetteStone.getEntry(
         bytecodeHash,
         sigHash,
       );
 
       // Status empty
-      if (status === 0) {
+      if (status.toString() === '0') {
         throw new NotFoundError(
           `No description entry found for signature ${sigHash} of ${
             contractAddress
@@ -223,15 +225,19 @@ export class Fetcher {
 
       _fnEntry = {
         abi: '',
-        disputed: status,
         notice: '',
         cid: toUtf8String(bytesCID),
         id: buildEntryId(bytecodeHash, sigHash),
         sigHash,
+        contract: contractAddress,
+        status: FnDescriptionStatus.Added,
+        submitter,
+        // TODO: Contract getter doesn't return this value
+        upsertAt: 0,
       };
     }
 
-    // Fallback to fetch entry data from IPFS.
+    // Fetch from IPFS when having incompleted entries
     const data = await this.#ipfsResolver.json(_fnEntry.cid);
 
     _fnEntry.abi = data.abi;

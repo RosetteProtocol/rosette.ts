@@ -3,7 +3,18 @@ export type GraphQLBody = {
   variables: Record<string, any>;
 };
 
-export const CONTRACT_FUNCTION_ENTRIES = (
+const FUNCTION_FRAGMENT = `
+  abi
+  cid
+  contract
+  id
+  notice
+  sigHash
+  submitter
+  upsertAt
+`;
+
+export const CONTRACT_FUNCTIONS = (
   contractId: string,
   allowDisputed: boolean,
 ): GraphQLBody => ({
@@ -11,11 +22,7 @@ export const CONTRACT_FUNCTION_ENTRIES = (
     query Contract($contractId: String!) {
       contract(id: $contractId) {
         functions {
-          abi
-          notice
-          cid,
-          id,
-          sigHash
+          ${FUNCTION_FRAGMENT}
         }
       }
     }
@@ -33,11 +40,7 @@ export const FUNCTION = (
   query: `
     query Function($entryId: String!) {
       function(id: $entryId) {
-        abi
-        notice
-        cid,
-        id,
-        sigHash
+        ${FUNCTION_FRAGMENT}
       }
     }
   `,
@@ -54,11 +57,7 @@ export const FUNCTIONS = (
   query: `
     query Functions($entryIds: [String!]!) {
       functions(where: { id_in: $entryIds }) {
-        abi,
-        notice,
-        cid,
-        id,
-        sigHash
+        ${FUNCTION_FRAGMENT}
       }
     }
   `,

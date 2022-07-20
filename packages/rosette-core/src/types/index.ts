@@ -6,13 +6,21 @@ export enum Network {
   // gnosisChain = 100,
 }
 
+export enum FnDescriptionStatus {
+  Available = 'available',
+  Added = 'added',
+}
+
 export type FnEntry = {
   abi: string;
-  notice: string;
   cid: string;
-  disputed: string;
+  contract: string;
   id: string;
+  notice: string;
   sigHash: string;
+  status: FnDescriptionStatus;
+  submitter: string;
+  upsertAt: number;
 };
 
 export interface Transaction {

@@ -1,19 +1,25 @@
 import type { FnEntry } from '../../types';
+import { FnDescriptionStatus } from '../../types';
 
 const _parseFunctionEntry = ({
   abi,
   cid,
-  disputed,
+  contract,
   id,
   notice,
   sigHash,
+  submitter,
+  upsertAt,
 }: any): FnEntry => ({
   abi,
   cid,
-  disputed,
+  contract,
   id,
   notice,
   sigHash,
+  status: FnDescriptionStatus.Added,
+  submitter,
+  upsertAt,
 });
 
 export const parseFunctionEntry = (data: any): FnEntry | null => {

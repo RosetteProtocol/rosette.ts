@@ -779,16 +779,16 @@ const cases: Case[] = [
     {
       source: 'Performs a call to `@radspec(contract, msg.data)`',
       bindings: {
-        contract: address('0xeD9f02371AD4B242Ee479f04F4f17D6F56E3A686'),
+        contract: address('0x6AD196dBcd43996F17638B924d2fdEDFF6Fdd677'),
       },
       options: {
         transaction: {
           to: '',
-          data: '0x6881385b',
+          data: '0xa9059cbb0000000000000000000000000fff4fa03366d84b2742751e5d712f4c61fba0560000000000000000000000000000000000000000000000000000000000989680',
         },
       },
     },
-    `Performs a call to Get owed Payroll allowance`,
+    `Performs a call to Transfer 10 USDT to 0x0Fff4FA03366d84b2742751e5D712f4c61Fba056`,
   ],
 
   ...comparisonCases,

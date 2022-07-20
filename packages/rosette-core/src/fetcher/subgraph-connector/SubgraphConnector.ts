@@ -7,7 +7,7 @@ import {
   parseFunctionEntry,
 } from './parsers';
 import type { GraphQLBody } from './queries';
-import { CONTRACT_FUNCTION_ENTRIES, FUNCTION, FUNCTIONS } from './queries';
+import { CONTRACT_FUNCTIONS, FUNCTION, FUNCTIONS } from './queries';
 import { ConnectionError } from '../../errors';
 
 type QueryOptions = {
@@ -80,7 +80,7 @@ export class SubgraphConnector {
     { allowDisputed }: QueryOptions = DEFAULT_OPTIONS,
   ): Promise<Result<FnEntry[]>> {
     return this.querySubgraph<FnEntry[]>(
-      CONTRACT_FUNCTION_ENTRIES(bytecodeHash, allowDisputed),
+      CONTRACT_FUNCTIONS(bytecodeHash, allowDisputed),
       parseContract,
     );
   }
