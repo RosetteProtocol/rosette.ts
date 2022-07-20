@@ -1,5 +1,13 @@
 # @blossom-labs/rosette-radspec
 
+## 0.1.4
+
+### Patch Changes
+
+- 525ac9d: Update libraries to work with Rosette's contracts on goerli network
+- Updated dependencies [525ac9d]
+  - @blossom-labs/rosette-core@0.1.3
+
 ## 0.1.3
 
 ### Patch Changes
