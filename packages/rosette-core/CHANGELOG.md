@@ -1,5 +1,11 @@
 # @blossom-labs/rosette-core
 
+## 0.1.4
+
+### Patch Changes
+
+- 0722748: Expose additional entry data (status, submitter, upsert date)
+
 ## 0.1.3
 
 ### Patch Changes
