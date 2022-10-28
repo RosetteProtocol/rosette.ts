@@ -11,7 +11,7 @@ import {
 } from 'date-fns';
 
 import { TypedValue } from '../evaluator';
-import type { RadspecHelper } from '../types';
+import type { UninitializedRadspecHelper } from '../types';
 
 type TimeUnit =
   | 'second'
@@ -37,7 +37,7 @@ const ADD_UNIT_FN = new Map([
 ]);
 const DISALLOWED_FROM_UNITS = new Set(['millisecond']);
 
-export const transformTime: RadspecHelper =
+export const transformTime: UninitializedRadspecHelper =
   () =>
   /**
    * Transform between time units.

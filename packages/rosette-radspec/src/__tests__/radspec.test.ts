@@ -1,5 +1,3 @@
-import type { Transaction } from '@blossom-labs/rosette-core';
-import { Fetcher } from '@blossom-labs/rosette-core';
 import {
   DEFAULT_TEST_SERVER_CONFIG,
   setUpTestServer,
@@ -7,23 +5,18 @@ import {
 import { ethers } from 'ethers';
 import type { providers } from 'ethers';
 
+import type { Transaction } from '../types';
 import { evaluate } from '../';
 
-const { ipfsGateway, network, rpcEndpoint } = DEFAULT_TEST_SERVER_CONFIG;
+const { rpcEndpoint } = DEFAULT_TEST_SERVER_CONFIG;
 
 describe('Radspec', () => {
-  let fetcher: Fetcher;
   let provider: providers.Provider;
 
   setUpTestServer();
 
   beforeAll(() => {
     provider = ethers.getDefaultProvider(rpcEndpoint);
-    fetcher = new Fetcher({
-      ipfsGateway,
-      rosetteNetworkId: network,
-      provider,
-    });
   });
 
   describe('when evaluating a transaction', () => {
@@ -33,7 +26,14 @@ describe('Radspec', () => {
         data: '0x2fb1b25f0000000000000000000000000000000000000000000000000000000000000001',
       };
 
-      await expect(evaluate(tx, provider)).resolves.toBe('Sign guideline 1');
+      await expect(
+        evaluate(
+          'Sign guideline `_guidelineVersion`',
+          'function sign(uint256 _guidelineVersion)',
+          tx,
+          provider,
+        ),
+      ).resolves.toBe('Sign guideline 1');
     });
 
     it('fails when trying to evaluate an invalid transaction', async () => {
@@ -42,9 +42,14 @@ describe('Radspec', () => {
         data: '0x2fb1b25fc000000000000000000000000000000000000000000000000002386f26fc1000000000000000000000000000000000000000000000000000000000000000007080000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000002e516d585148356576724a5746466234454438714648745a57695132347953645175356b4d616f7a79337378505a76000000000000000000000000000000000000',
       };
       await expect(
-        evaluate(invalidTx, provider, { fetcher }),
+        evaluate(
+          'Some radspec expression',
+          'function a()',
+          invalidTx,
+          provider,
+        ),
       ).rejects.toMatchInlineSnapshot(
-        `[InvalidTransactionError: hex data is odd-length (argument="value", value="0xc000000000000000000000000000000000000000000000000002386f26fc1000000000000000000000000000000000000000000000000000000000000000007080000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000002e516d585148356576724a5746466234454438714648745a57695132347953645175356b4d616f7a79337378505a76000000000000000000000000000000000000", code=INVALID_ARGUMENT, version=bytes/5.6.1)]`,
+        `[InvalidTransactionError: Failed to decode tx: no matching function (argument="sighash", value="0x2fb1b25f", code=INVALID_ARGUMENT, version=abi/5.6.2)]`,
       );
     });
 

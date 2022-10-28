@@ -6,19 +6,21 @@ import { formatPct } from './formatPct';
 import { withDecimals } from './withDecimals';
 import { tokenAmount } from './tokenAmount';
 import { transformTime } from './transformTime';
+import type { MetadataFetcher as RadspecHelperMetadataFetcher } from './radspec';
 import { radspec } from './radspec';
+import type { UninitializedRadspecHelper } from '../types';
 
-const defaultHelpers = {
+const defaultHelpers: Record<string, UninitializedRadspecHelper> = {
   echo,
   formatDate,
   formatPct,
   fromHex,
-  radspec,
   tokenAmount,
   transformTime,
   withDecimals,
 };
 
+export type { RadspecHelperMetadataFetcher };
 export {
   HelperManager,
   defaultHelpers,

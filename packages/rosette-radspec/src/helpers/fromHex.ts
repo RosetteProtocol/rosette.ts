@@ -1,9 +1,9 @@
 import { BigNumber, utils as ethersUtils } from 'ethers';
 
 import { TypedValue } from '../evaluator';
-import type { RadspecHelper } from '../types';
+import type { UninitializedRadspecHelper } from '../types';
 
-export const fromHex: RadspecHelper =
+export const fromHex: UninitializedRadspecHelper =
   () =>
   /**
    * Returns the string representation of a given hex value

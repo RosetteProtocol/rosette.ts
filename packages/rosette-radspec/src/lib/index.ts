@@ -1,16 +1,15 @@
 import type { providers } from 'ethers';
 
-import { defaultHelpers } from '../helpers';
-import type { EvaluatorOptions } from '../evaluator';
 import { evaluate } from '../evaluator';
+import { HelperManager } from '../helpers';
 import { parse } from '../parser';
 import { scan } from '../scanner';
-import { getDefaultFetcher } from '../fetcher';
-import type { Bindings } from '../types';
+import type { Bindings, Transaction } from '../types';
 
-export type EvaluateRawOptions = Partial<
-  Pick<EvaluatorOptions, 'availableHelpers' | 'fetcher' | 'transaction'>
->;
+export type EvaluateRawOptions = {
+  helperManager: HelperManager;
+  transaction: Transaction;
+};
 /**
  * Evaluate a radspec expression with manual bindings.
  *
@@ -33,8 +32,7 @@ export const evaluateRaw = async (
   evaluatorOptions?: EvaluateRawOptions,
 ): Promise<string | undefined> => {
   const {
-    fetcher = getDefaultFetcher(),
-    availableHelpers = { ...defaultHelpers },
+    helperManager = new HelperManager({}, { provider }),
     transaction = { to: '', data: '' },
   } = evaluatorOptions || {};
 
@@ -47,8 +45,7 @@ export const evaluateRaw = async (
   const ast = await parse(tokens);
 
   return evaluate(ast, bindings, {
-    availableHelpers,
-    fetcher,
+    helperManager,
     provider,
     transaction,
   });

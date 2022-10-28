@@ -2,13 +2,12 @@
  * @module radspec/evaluator
  */
 
-import type { Fetcher, Transaction } from '@blossom-labs/rosette-core';
 import { BigNumber, utils as ethersUtils } from 'ethers';
 import type { providers } from 'ethers';
 
 import HelperManager from '../helpers/HelperManager';
 import { TYPES, isAddress, isInteger } from '../types/solidity';
-import type { AST, Bindings, Node } from '../types';
+import type { AST, Bindings, Node, Transaction } from '../types';
 import {
   BANG_EQUAL,
   BinaryExpression,
@@ -43,8 +42,7 @@ export interface EvaluatorOptions {
   /**
    * Available helpers
    */
-  availableHelpers?: Record<string, any>;
-  fetcher: Fetcher;
+  helperManager: HelperManager;
   provider: providers.Provider;
   transaction: Transaction;
 }
@@ -108,12 +106,11 @@ export class Evaluator {
   #data: TypedValue | undefined;
   #value: TypedValue | undefined;
 
-  readonly fetcher: Fetcher;
   readonly helperManager: HelperManager;
   readonly provider: providers.Provider;
 
   constructor(ast: AST, bindings: Bindings, options: EvaluatorOptions) {
-    const { availableHelpers = {}, fetcher, provider, transaction } = options;
+    const { helperManager, provider, transaction } = options;
     const { from, to, data, value = '0' } = transaction;
 
     this.#ast = ast;
@@ -125,8 +122,7 @@ export class Evaluator {
       : undefined;
     this.#data = data ? new TypedValue('bytes', data) : undefined;
 
-    this.helperManager = new HelperManager(availableHelpers);
-    this.fetcher = fetcher;
+    this.helperManager = helperManager || new HelperManager({}, { provider });
     this.provider = provider;
   }
 
@@ -369,9 +365,7 @@ export class Evaluator {
       const inputs = await this.#evaluateNodes(node.inputs ?? []);
 
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const result = await this.helperManager.execute(helperName!, inputs, {
-        evaluator: this,
-      });
+      const result = await this.helperManager.execute(helperName!, inputs);
 
       return new TypedValue(result.type, result.value);
     }
@@ -426,7 +420,7 @@ export class Evaluator {
    * @param msg The error message to report.
    */
   #panic(msg: string): void {
-    throw new Error(`Error: ${msg}`);
+    throw new Error(msg);
   }
 
   #stringifyTypes(nodes: (TypedValue | undefined)[], separator = ''): string {
