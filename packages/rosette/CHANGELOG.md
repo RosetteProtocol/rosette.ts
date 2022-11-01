@@ -1,5 +1,14 @@
 # @blossom-labs/rosette
 
+## 0.1.4
+
+### Patch Changes
+
+- 444ac8e: Generalize `radspec` library
+- Updated dependencies [444ac8e]
+  - @blossom-labs/rosette-radspec@0.2.0
+  - @blossom-labs/rosette-core@0.1.5
+
 ## 0.1.3
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @blossom-labs/rosette-radspec
 
+## 0.2.0
+
+### Minor Changes
+
+- 444ac8e: Generalize `radspec` library
+
 ## 0.1.4
 
 ### Patch Changes
