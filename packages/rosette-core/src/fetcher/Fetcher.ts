@@ -58,6 +58,8 @@ export class Fetcher {
     sigHash: string,
     provider: Provider,
   ): Promise<FnEntry> {
+    // TODO: Validate params
+
     const bytecodeHash = await getBytecodeHash(provider, contractAddress);
     const entryId = buildEntryId(bytecodeHash, sigHash);
 
@@ -86,6 +88,7 @@ export class Fetcher {
     provider: Provider,
     options: { ignoreNotFound: boolean } = { ignoreNotFound: false },
   ): Promise<FnEntry[]> {
+    // TODO: Validate params
     const bytecodeHashes = await Promise.all(
       contractsToSigHashes.map(([address]) =>
         getBytecodeHash(provider, address),
@@ -165,6 +168,7 @@ export class Fetcher {
     contractAddress: Address,
     provider: Provider,
   ): Promise<FnEntry[]> {
+    // TODO: Validate params
     const bytecodeHash = await getBytecodeHash(provider, contractAddress);
 
     const [fnEntries, subgraphError] =

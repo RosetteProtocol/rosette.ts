@@ -1,10 +1,10 @@
 import { BigNumber } from 'ethers';
 
 import { TypedValue } from '../evaluator';
-import type { RadspecHelper } from '../types';
+import type { UninitializedRadspecHelper } from '../types';
 import { formatBN, tenPow } from './lib/formatBN';
 
-export const withDecimals: RadspecHelper =
+export const withDecimals: UninitializedRadspecHelper =
   () =>
   /**
    * Format an numerical amount with its decimals

@@ -2,11 +2,11 @@ import { BigNumber } from 'ethers';
 
 import { TypedValue } from '../evaluator';
 
-import type { RadspecHelper } from '../types';
+import type { UninitializedRadspecHelper } from '../types';
 
 import { formatBN, tenPow } from './lib/formatBN';
 
-export const formatPct: RadspecHelper =
+export const formatPct: UninitializedRadspecHelper =
   () =>
   /**
    * Format a percentage amount

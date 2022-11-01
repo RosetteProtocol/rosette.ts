@@ -1,63 +1,75 @@
 /**
  * @module radspec
  */
-import type { Fetcher, Transaction } from '@blossom-labs/rosette-core';
-
 import type { providers } from 'ethers';
 
 import { decodeCalldata } from './decoder';
-import { defaultHelpers } from './helpers';
+import { HelperManager, defaultHelpers } from './helpers';
 import type { EvaluateRawOptions } from './lib';
 import { evaluateRaw } from './lib';
-import { getDefaultFetcher } from './fetcher';
-import { getSigHash } from './utils';
+import type { Transaction, UninitializedRadspecHelper } from './types';
 
 export interface EvaluateOptions {
-  userHelpers?: Record<string, any>;
-  fetcher?: Fetcher;
+  helpersConfig?: { [x: string]: unknown };
+  userHelpers?: Record<string, UninitializedRadspecHelper>;
 }
 
 /**
-  * Evaluate a radspec expression for a transaction
-  *
-  * @example
-  * import * as radspec from 'radspec'
-  *
-  * const transaction: {
-  *   to: '0x8521742d3f456bd237e312d6e30724960f72517a',
-  *   data: '0xc6888fa1000000000000000000000000000000000000000000000000000000000000007a'
-  * }
- 
-  *
-  * radspec.evaluate(transaction, provider)
-  *   .then(console.log) // => "Will multiply 122 by 7 and return 854."
-  * @param transaction The transaction to decode for this evaluation
-  * @param provider EIP 1193 provider
-  * @param options An options object
-  * @param options.userHelpers User defined helpers
-  * @param options.fetcher A rosette's protocol fetcher.
-  * @return {Promise<string>} The result of the evaluation
-  */
+ * Evaluate a radspec expression for a transaction
+ *
+ * @param expression The radspec expression
+ * @param abi The ABI used to decode the transaction data
+ * @param tx The transaction to decode for this evaluation
+ * @param provider EIP 1193 provider
+ * @param options An options object
+ * @param options.userHelpers User defined helpers
+ * @param options.helpersConfig Helpers additional config
+ * @return {Promise<string>} The result of the evaluation
+ * @example
+ * import * as radspec from 'radspec'
+ *
+ * const expression = 'Will multiply `a` by 7 and return `a * 7`.'
+ * const call = {
+ *   abi: [{
+ *     name: 'multiply',
+ *     constant: false,
+ *     type: 'function',
+ *     inputs: [{
+ *       name: 'a',
+ *       type: 'uint256'
+ *     }],
+ *     outputs: [{
+ *       name: 'd',
+ *       type: 'uint256'
+ *     }]
+ *   }],
+ * const transaction: {
+ *   to: '0x8521742d3f456bd237e312d6e30724960f72517a',
+ *   data: '0xc6888fa1000000000000000000000000000000000000000000000000000000000000007a'
+ * }
+ *
+ * radspec.evaluate(notice, abi, transaction, provider)
+ *   .then(console.log) // => "Will multiply 122 by 7 and return 854."
+ */
 async function evaluate(
-  transaction: Transaction,
+  expression: string,
+  abi: string,
+  tx: Transaction,
   provider: providers.Provider,
   options?: EvaluateOptions,
 ): Promise<string | undefined> {
-  const { fetcher = getDefaultFetcher(), userHelpers = {} } = options || {};
+  const { userHelpers = {}, helpersConfig = {} } = options || {};
   const availableHelpers = { ...defaultHelpers, ...userHelpers };
-  const sigHash = getSigHash(transaction.data);
-  const { abi, notice } = await fetcher.entry(
-    transaction.to,
-    sigHash,
-    provider,
-  );
-  const bindings = decodeCalldata(abi, transaction);
+
+  const bindings = decodeCalldata(abi, tx);
 
   // Evaluate expression with bindings from the transaction data
-  return evaluateRaw(notice, bindings, provider, {
-    availableHelpers,
-    fetcher,
-    transaction,
+  return evaluateRaw(expression, bindings, provider, {
+    helperManager: new HelperManager(availableHelpers, {
+      ...helpersConfig,
+      provider,
+    }),
+    transaction: tx,
   });
 }
 
@@ -67,9 +79,13 @@ export default evaluate;
 export { evaluate, evaluateRaw };
 export type { EvaluateRawOptions };
 export { decodeCalldata };
-export { getDefaultFetcher };
+export * from './helpers';
 export { parse } from './parser';
 export { scan } from './scanner';
 
-export * from './types';
+export type {
+  HelperConfig,
+  RadspecHelper,
+  UninitializedRadspecHelper,
+} from './types';
 export * from './errors';

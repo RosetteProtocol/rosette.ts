@@ -1,7 +1,7 @@
 import { TypedValue } from '../evaluator';
-import type { RadspecHelper } from '../types';
+import type { UninitializedRadspecHelper } from '../types';
 
-export const echo: RadspecHelper =
+export const echo: UninitializedRadspecHelper =
   () =>
   /**
    * Repeats a string (testing helper)

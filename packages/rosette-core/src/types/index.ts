@@ -33,5 +33,5 @@ export interface Transaction {
    * The transaction calldata.
    */
   data: string;
-  value?: string | number;
+  value?: string;
 }

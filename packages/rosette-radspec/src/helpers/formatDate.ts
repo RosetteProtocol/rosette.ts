@@ -1,9 +1,9 @@
 import dnsFormateDate from 'date-fns/format';
 
 import { TypedValue } from '../evaluator';
-import type { RadspecHelper } from '../types';
+import type { UninitializedRadspecHelper } from '../types';
 
-export const formatDate: RadspecHelper =
+export const formatDate: UninitializedRadspecHelper =
   () =>
   /**
    * Format a timestamp as a string

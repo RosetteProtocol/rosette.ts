@@ -1,16 +1,18 @@
-import { Fetcher } from '@blossom-labs/rosette-core';
 import {
   DEFAULT_TEST_SERVER_CONFIG,
   setUpTestServer,
 } from '@blossom-labs/rosette-test';
 import { BigNumber, providers } from 'ethers';
 
+import { Fetcher } from '@blossom-labs/rosette-core';
+
 import { TypedValue } from '../../evaluator';
 import { evaluateRaw } from '../../lib';
 
-import { defaultHelpers } from '../../helpers';
+import { HelperManager, defaultHelpers, radspec } from '../../helpers';
 import { tenPow } from '../../helpers/lib/formatBN';
 import { ETH } from '../../helpers/lib/token';
+import type { MetadataFetcher } from '../../helpers/radspec';
 
 type EvaluateRawParameters = Parameters<typeof evaluateRaw>;
 
@@ -799,29 +801,35 @@ const cases: Case[] = [
 const { ipfsGateway, network, rpcEndpoint } = DEFAULT_TEST_SERVER_CONFIG;
 
 describe('Test radspec examples', () => {
-  let fetcher: Fetcher;
+  let fetcher: MetadataFetcher;
   let provider: providers.Provider;
 
   setUpTestServer();
 
   beforeAll(async () => {
     provider = new providers.JsonRpcProvider(rpcEndpoint);
-    fetcher = new Fetcher({
+    const rosettefetcher = new Fetcher({
       ipfsGateway,
-      rosetteNetworkId: network,
       provider,
+      rosetteNetworkId: network,
     });
+
+    fetcher = {
+      getFnMetadata(contractAddress, fnSigHash, provider) {
+        return rosettefetcher.entry(contractAddress, fnSigHash, provider);
+      },
+    };
   });
 
   cases.forEach(([input, expected], index) => {
     it(`${index} - ${input.source}`, async () => {
-      // const { userHelpers, userFunctions = {} } = input.options || {};
       const actual = evaluateRaw(input.source, input.bindings ?? {}, provider, {
-        availableHelpers: { ...defaultHelpers /*, ...userHelpers  */ },
-        fetcher,
+        helperManager: new HelperManager(
+          { ...defaultHelpers, radspec },
+          { fetcher, provider },
+        ),
         transaction: { to: '', data: '' },
         ...input.options,
-        // availableFunctions: { ...knownFunctions /*, ...userFunctions */ },
       });
 
       await expect(actual).resolves.toBe(expected);

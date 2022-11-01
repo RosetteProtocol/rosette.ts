@@ -1,8 +1,10 @@
 /**
  * @module radspec/helpers/HelperManager
  */
+import type { providers } from 'ethers';
+
 import type { TypedValue } from '../evaluator';
-import type { HelperConfig, RadspecHelper } from '../types';
+import type { RadspecHelper, UninitializedRadspecHelper } from '../types';
 
 /**
  * Class for managing the execution of helper functions
@@ -13,8 +15,22 @@ import type { HelperConfig, RadspecHelper } from '../types';
 export default class HelperManager {
   readonly availableHelpers: Record<string, RadspecHelper>;
 
-  constructor(availableHelpers = {}) {
-    this.availableHelpers = availableHelpers;
+  constructor(
+    uninitializedHelpers: Record<string, UninitializedRadspecHelper> = {},
+    config: { provider: providers.Provider; [x: string]: unknown },
+  ) {
+    this.availableHelpers = Object.keys(uninitializedHelpers).reduce<
+      Record<string, RadspecHelper>
+    >(
+      (helpers, helperName) => ({
+        ...helpers,
+        [helperName]: uninitializedHelpers[helperName]({
+          ...config,
+          helperManager: this,
+        }),
+      }),
+      {},
+    );
   }
 
   /**
@@ -38,11 +54,10 @@ export default class HelperManager {
    */
   execute(
     helper: string,
-    inputs: (TypedValue | undefined)[],
-    config: HelperConfig,
-  ): ReturnType<ReturnType<RadspecHelper>> {
-    inputs = inputs.map((i) => (i ? i.value : '')); // pass values directly
+    params: (TypedValue | undefined)[],
+  ): ReturnType<ReturnType<UninitializedRadspecHelper>> {
+    params = params.map((i) => (i ? i.value : '')); // pass values directly
 
-    return this.availableHelpers[helper](config)(...inputs);
+    return this.availableHelpers[helper](...params);
   }
 }
