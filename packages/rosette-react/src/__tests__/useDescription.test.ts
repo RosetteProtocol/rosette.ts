@@ -42,7 +42,7 @@ describe('useDescription', () => {
         () => {
           expect(result.current[1]).toBeFalsy();
         },
-        { timeout: 5000 },
+        { timeout: 10000 },
       );
 
       const hookRes = result.current;

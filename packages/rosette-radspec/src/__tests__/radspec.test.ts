@@ -2,8 +2,9 @@ import {
   DEFAULT_TEST_SERVER_CONFIG,
   setUpTestServer,
 } from '@blossom-labs/rosette-test';
-import { ethers } from 'ethers';
-import type { providers } from 'ethers';
+import { providers, utils } from 'ethers';
+
+import { Fragment } from 'ethers/lib/utils';
 
 import type { Transaction } from '../types';
 import { evaluate } from '../';
@@ -16,25 +17,43 @@ describe('Radspec', () => {
   setUpTestServer();
 
   beforeAll(() => {
-    provider = ethers.getDefaultProvider(rpcEndpoint);
+    provider = new providers.JsonRpcProvider(rpcEndpoint);
   });
 
   describe('when evaluating a transaction', () => {
-    it('evaluates it correctly', async () => {
-      const tx: Transaction = {
-        to: '0x7e18C76Aa26BD6bD04196e34C93a925498A5d0F1',
-        data: '0x2fb1b25f0000000000000000000000000000000000000000000000000000000000000001',
-      };
+    const tx: Transaction = {
+      to: '0x7e18C76Aa26BD6bD04196e34C93a925498A5d0F1',
+      data: '0x2fb1b25f0000000000000000000000000000000000000000000000000000000000000001',
+    };
+    const stringAbi = 'function sign(uint256 _guidelineVersion)';
+    const radspecExpression = 'Sign guideline `_guidelineVersion`';
+    const cases: [string, Parameters<typeof evaluate>[1]][] = [
+      ['raw abi', stringAbi],
+      ['ethers fragment', [Fragment.from(stringAbi)]],
+      [
+        'ethers json fragment',
+        [
+          {
+            constant: false,
+            inputs: [{ name: '_guidelineVersion', type: 'uint256' }],
+            name: 'sign',
+            outputs: [],
+            payable: false,
+            stateMutability: 'nonpayable',
+            type: 'function',
+          },
+        ],
+      ],
+      ['ethers interface', new utils.Interface([stringAbi])],
+    ];
 
-      await expect(
-        evaluate(
-          'Sign guideline `_guidelineVersion`',
-          'function sign(uint256 _guidelineVersion)',
-          tx,
-          provider,
-        ),
-      ).resolves.toBe('Sign guideline 1');
-    });
+    cases.forEach(([caseName, abi]) =>
+      it(`evaluates it correctly when passing ${caseName}`, async () => {
+        await expect(
+          evaluate(radspecExpression, abi, tx, provider),
+        ).resolves.toBe('Sign guideline 1');
+      }),
+    );
 
     it('fails when trying to evaluate an invalid transaction', async () => {
       const invalidTx: Transaction = {
@@ -49,7 +68,7 @@ describe('Radspec', () => {
           provider,
         ),
       ).rejects.toMatchInlineSnapshot(
-        `[InvalidTransactionError: Failed to decode tx: no matching function (argument="sighash", value="0x2fb1b25f", code=INVALID_ARGUMENT, version=abi/5.6.2)]`,
+        `[InvalidTransactionError: Failed to decode tx: no matching function (argument="sighash", value="0x2fb1b25f", code=INVALID_ARGUMENT, version=abi/5.7.0)]`,
       );
     });
 

@@ -1,7 +1,8 @@
 /**
  * @module radspec
  */
-import type { providers } from 'ethers';
+import type { providers, utils } from 'ethers';
+import type { Fragment, JsonFragment } from '@ethersproject/abi';
 
 import { decodeCalldata } from './decoder';
 import { HelperManager, defaultHelpers } from './helpers';
@@ -53,7 +54,10 @@ export interface EvaluateOptions {
  */
 async function evaluate(
   expression: string,
-  abi: string,
+  abi:
+    | string
+    | ReadonlyArray<Fragment | JsonFragment | string>
+    | utils.Interface,
   tx: Transaction,
   provider: providers.Provider,
   options?: EvaluateOptions,

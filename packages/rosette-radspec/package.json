@@ -27,7 +27,8 @@
   "homepage": "https://github.com/BlossomLabs/rosette.ts#readme",
   "devDependencies": {
     "@blossom-labs/rosette-core": "workspace:^0.1.5",
-    "@blossom-labs/rosette-test": "workspace:^0.0.1"
+    "@blossom-labs/rosette-test": "workspace:^0.0.1",
+    "@ethersproject/abi": "^5.6.4"
   },
   "dependencies": {
     "date-fns": "^2.26.0"

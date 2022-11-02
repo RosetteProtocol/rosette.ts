@@ -1,4 +1,7 @@
+import { utils } from 'ethers';
 import { Interface } from 'ethers/lib/utils';
+
+import type { evaluate } from '..';
 
 import { InvalidTransactionError } from '../errors';
 
@@ -12,10 +15,13 @@ import type { Bindings, Transaction } from '../types';
  * @return An object with the parameters
  */
 export function decodeCalldata(
-  abi: string,
+  abi: Parameters<typeof evaluate>[1],
   transaction: Transaction,
 ): Bindings {
-  const ethersInterface = new Interface([abi]);
+  const ethersInterface =
+    abi instanceof utils.Interface
+      ? abi
+      : new Interface(Array.isArray(abi) ? abi : [abi]);
 
   try {
     const { args, functionFragment } =
